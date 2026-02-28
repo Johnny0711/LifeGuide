@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lifeguide
+    username: postgres
+    password: password # TODO: Change to your local DB password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+    open-in-view: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://YOUR_DOMAIN.eu.auth0.com/ # TODO: Change to your Auth0 domain
+          audiences: https://lifeguide-api # TODO: Change if you set a custom audience API in Auth0

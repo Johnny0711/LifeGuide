@@ -1,0 +1,175 @@
+.habits-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.habits-header {
+    margin-bottom: 2rem;
+}
+
+.habits-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+}
+
+.habits-controls {
+    margin-bottom: 2rem;
+}
+
+.add-habit-form {
+    display: flex;
+    gap: 1rem;
+}
+
+.habits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.habit-card-oop {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.habit-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.habit-info h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    padding: 0.3rem 0.8rem;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    font-weight: bold;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.flame-active {
+    color: var(--warning);
+    animation: pulse 2s infinite;
+}
+
+.flame-inactive {
+    color: var(--text-muted);
+}
+
+.habit-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.today-btn {
+    min-width: 140px;
+}
+
+.habit-delete-btn {
+    opacity: 0;
+}
+
+.habit-card-oop:hover .habit-delete-btn {
+    opacity: 1;
+}
+
+.habit-delete-btn:hover {
+    color: var(--danger) !important;
+}
+
+.habit-history {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 1rem;
+    gap: 0.5rem;
+}
+
+.history-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.day-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.day-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--glass-border);
+    transition: all var(--transition-normal);
+}
+
+.day-circle.completed {
+    background: var(--success);
+    border-color: var(--success);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.day-circle.missed {
+    background: var(--bg-tertiary);
+    opacity: 0.5;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 640px) {
+    .add-habit-form {
+        flex-direction: column;
+    }
+
+    .habit-main {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .habit-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .day-circle {
+        width: 24px;
+        height: 24px;
+    }
+
+    .day-label {
+        font-size: 0.65rem;
+    }
+}

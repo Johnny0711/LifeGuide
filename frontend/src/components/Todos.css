@@ -1,0 +1,106 @@
+.todos-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.todos-header {
+    margin-bottom: 2rem;
+}
+
+.todos-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+}
+
+.todos-content {
+    padding: 2rem;
+}
+
+/* OOP components handle button and input styling */
+
+.add-todo-form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 640px) {
+    .add-todo-form {
+        flex-direction: column;
+    }
+}
+
+.todo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    transition: all var(--transition-normal);
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.todo-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--glass-border);
+}
+
+.todo-checkbox {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.todo-item.completed .todo-checkbox {
+    background: var(--success);
+    border-color: var(--success);
+}
+
+.todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.check-icon {
+    color: white;
+    animation: fadeIn 0.2s ease forwards;
+}
+
+.todo-text {
+    flex: 1;
+    font-size: 1.05rem;
+    transition: color var(--transition-fast);
+}
+
+.todo-delete-btn {
+    opacity: 0;
+}
+
+.todo-item:hover .todo-delete-btn {
+    opacity: 1;
+}
+
+.todo-delete-btn:hover {
+    color: var(--danger) !important;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-style: italic;
+}

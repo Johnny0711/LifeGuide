@@ -1,0 +1,126 @@
+import React, { useState, useEffect } from 'react';
+import api from '../services/apiService';
+import { Check, Trash2, Plus } from 'lucide-react';
+import { TodoItem, type ITodo } from '../models/TodoItem';
+import { Button } from './ui/Button';
+import { Card } from './ui/Card';
+import { Input } from './ui/Input';
+import './Todos.css';
+
+const Todos: React.FC = () => {
+    const [todos, setTodos] = useState<ITodo[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [inputValue, setInputValue] = useState('');
+
+    useEffect(() => {
+        fetchTodos();
+    }, []);
+
+    const fetchTodos = async () => {
+        try {
+            const response = await api.get('/todos');
+            setTodos(response.data);
+        } catch (error) {
+            console.error('Failed to fetch todos', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const addTodo = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!inputValue.trim()) return;
+
+        try {
+            const response = await api.post('/todos', { text: inputValue.trim(), completed: false });
+            setTodos(prev => [response.data, ...prev]);
+            setInputValue('');
+        } catch (error) {
+            console.error('Failed to create todo', error);
+        }
+    };
+
+    const toggleTodo = async (id: string) => {
+        try {
+            const response = await api.put(`/todos/${id}/toggle`);
+            setTodos(prev => prev.map(t => (t.id === id ? response.data : t)));
+        } catch (error) {
+            console.error('Failed to toggle todo', error);
+        }
+    };
+
+    const deleteTodo = async (id: string) => {
+        try {
+            await api.delete(`/todos/${id}`);
+            setTodos(prev => prev.filter(t => t.id !== id));
+        } catch (error) {
+            console.error('Failed to delete todo', error);
+        }
+    };
+
+    return (
+        <div className="todos-container animate-fade-in">
+            <header className="todos-header">
+                <h1>To-Do List</h1>
+                <p>Keep track of your daily tasks.</p>
+            </header>
+
+            <Card className="todos-content" noPadding={false}>
+                <form onSubmit={addTodo} className="add-todo-form">
+                    <Input
+                        fullWidth
+                        type="text"
+                        placeholder="What needs to be done?"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                    />
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        disabled={!inputValue.trim()}
+                        leftIcon={<Plus size={20} />}
+                    >
+                        Add
+                    </Button>
+                </form>
+
+                <ul className="todo-list">
+                    {isLoading ? (
+                        <div className="empty-state">Loading Tasks...</div>
+                    ) : todos.length === 0 ? (
+                        <div className="empty-state">No tasks yet. Enjoy your day!</div>
+                    ) : (
+                        [...todos]
+                            .sort((a, b) => Number(a.completed) - Number(b.completed))
+                            .map((todo) => (
+                                <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+                                    <button
+                                        type="button"
+                                        className="todo-checkbox"
+                                        onClick={() => toggleTodo(todo.id)}
+                                        aria-label="Toggle completion"
+                                    >
+                                        {todo.completed && <Check size={16} className="check-icon" />}
+                                    </button>
+
+                                    <span className="todo-text">{todo.text}</span>
+
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="todo-delete-btn"
+                                        onClick={() => deleteTodo(todo.id)}
+                                        aria-label="Delete task"
+                                    >
+                                        <Trash2 size={18} />
+                                    </Button>
+                                </li>
+                            ))
+                    )}
+                </ul>
+            </Card>
+        </div>
+    );
+};
+
+export default Todos;
