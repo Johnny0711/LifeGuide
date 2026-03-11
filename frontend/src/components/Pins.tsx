@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/apiService';
 import { Plus, Trash2 } from 'lucide-react';
-import { PinItem, type IPin } from '../models/PinItem';
+import { type IPin } from '../models/PinItem';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import './Pins.css';

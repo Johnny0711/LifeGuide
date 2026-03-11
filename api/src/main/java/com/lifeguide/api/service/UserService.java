@@ -37,4 +37,16 @@ public class UserService {
         return userRepository.findByAuth0Id(auth0Id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
+    @Transactional
+    public User updateUserProfile(String auth0Id, com.lifeguide.api.dto.ProfileUpdateDto dto) {
+        User user = getUserByAuth0Id(auth0Id);
+        
+        if (dto.getUsername() != null) user.setUsername(dto.getUsername());
+        if (dto.getAge() != null) user.setAge(dto.getAge());
+        if (dto.getHeightCm() != null) user.setHeightCm(dto.getHeightCm());
+        if (dto.getCurrentWeightKg() != null) user.setCurrentWeightKg(dto.getCurrentWeightKg());
+        
+        return userRepository.save(user);
+    }
 }

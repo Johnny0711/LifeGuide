@@ -173,21 +173,14 @@ ul {
 }
 
 @media (min-width: 768px) {
-  .app-container {
-    flex-direction: row;
-  }
-
   .app-main {
     padding: 2.5rem;
   }
 }
 
 @media (max-width: 767px) {
-
-
-
   .app-main {
-    padding-bottom: 90px;
+    padding-bottom: 2rem;
     padding-left: 1rem;
     padding-right: 1rem;
   }

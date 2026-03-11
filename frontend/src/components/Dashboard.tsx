@@ -1,169 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import api from '../services/apiService';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { CheckSquare, Pin, Dumbbell, ArrowRight, Flame } from 'lucide-react';
-import { Card } from './ui/Card';
+import { CheckSquare, Flame, Dumbbell, Pin } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
-    const [todos, setTodos] = useState<any[]>([]);
-    const [pins, setPins] = useState<any[]>([]);
-    const [splits, setSplits] = useState<any[]>([]);
-    const [habits, setHabits] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                const [todosRes, pinsRes, splitsRes, habitsRes] = await Promise.all([
-                    api.get('/todos'),
-                    api.get('/pins'),
-                    api.get('/workouts'),
-                    api.get('/habits')
-                ]);
-
-                setTodos(todosRes.data);
-                setPins(pinsRes.data);
-                setSplits(splitsRes.data);
-                setHabits(habitsRes.data);
-            } catch (error) {
-                console.error('Failed to fetch dashboard data', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchDashboardData();
-    }, []);
-
-    if (isLoading) {
-        return <div className="dashboard-container" style={{ padding: '2rem', textAlign: 'center' }}>Loading Dashboard...</div>;
-    }
-
-    const activeTodos = todos.filter((t) => !t.completed);
-    const todaysDayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-    const todaySplit = splits.find((s) => s.day === todaysDayName);
-    const recentPins = [...pins].sort((a, b) => b.createdAt - a.createdAt).slice(0, 3);
-
-    // Quick habit snapshot
-    const totalHabits = habits.length;
-    // Calculate if it's done today: We check current streak and completed dates.
-    // The backend Habit response has a completedDates array we can check.
-    const todayStr = new Date().toISOString().split('T')[0];
-    const completedHabits = habits.filter(h => h.completedDates && h.completedDates.includes(todayStr)).length;
+    // No longer parsing full widgets, using quick launcher
 
     return (
         <div className="dashboard-container animate-fade-in">
             <header className="dashboard-header">
-                <h1>Welcome Back, Joni</h1>
-                <p>Here's a summary of your life today: <strong>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</strong></p>
+                <h1>LifeGuide Hub</h1>
+                <p>Welcome to your personal operating system. Choose an app to begin.</p>
             </header>
 
-            <div className="dashboard-grid">
-                {/* Habit Snapshot */}
-                <Card noPadding={false} className="widget">
-                    <div className="widget-header">
-                        <div className="widget-title">
-                            <Flame size={20} className="widget-icon" />
-                            <h2>Today's Habits</h2>
-                        </div>
-                        <Link to="/habits" className="widget-link">
-                            View <ArrowRight size={16} />
-                        </Link>
+            <div className="app-launcher-grid">
+                <Link to="/todos" className="launcher-card">
+                    <div className="launcher-icon-container" style={{ background: 'var(--accent-glow)', color: 'var(--accent-primary)' }}>
+                        <CheckSquare size={32} />
                     </div>
-                    <div className="widget-content">
-                        {totalHabits > 0 ? (
-                            <div className="habit-quick-stats">
-                                <div className="stat-circle">
-                                    <span className="stat-number">{completedHabits} / {totalHabits}</span>
-                                    <span className="stat-label"> Done</span>
-                                </div>
-                            </div>
-                        ) : (
-                            <p className="no-data">No habits tracked today.</p>
-                        )}
-                    </div>
-                </Card>
+                    <h2>Tasks</h2>
+                    <p>Manage your daily to-dos and stay productive.</p>
+                </Link>
 
-                {/* Workout Widget */}
-                <Card noPadding={false} className="widget">
-                    <div className="widget-header">
-                        <div className="widget-title">
-                            <Dumbbell size={20} className="widget-icon" />
-                            <h2>Today's Workout</h2>
-                        </div>
-                        <Link to="/workouts" className="widget-link">
-                            View <ArrowRight size={16} />
-                        </Link>
+                <Link to="/habits" className="launcher-card">
+                    <div className="launcher-icon-container" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--warning)' }}>
+                        <Flame size={32} />
                     </div>
-                    <div className="widget-content">
-                        {todaySplit && todaySplit.exercises && todaySplit.exercises.length > 0 ? (
-                            <div className="today-workout">
-                                <div className="split-badge">{todaySplit.splitName}</div>
-                                <p className="ex-count">
-                                    {todaySplit.exercises.length} exercise{todaySplit.exercises.length !== 1 ? 's' : ''} planned
-                                </p>
-                            </div>
-                        ) : (
-                            <p className="no-data">No workout data found for today.</p>
-                        )}
-                    </div>
-                </Card>
+                    <h2>Habits</h2>
+                    <p>Build and track your daily streaks.</p>
+                </Link>
 
-                {/* Todos Widget */}
-                <Card noPadding={false} className="widget">
-                    <div className="widget-header">
-                        <div className="widget-title">
-                            <CheckSquare size={20} className="widget-icon" />
-                            <h2>Active Tasks</h2>
-                        </div>
-                        <Link to="/todos" className="widget-link">
-                            View <ArrowRight size={16} />
-                        </Link>
+                <Link to="/workouts" className="launcher-card">
+                    <div className="launcher-icon-container" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--success)' }}>
+                        <Dumbbell size={32} />
                     </div>
-                    <div className="widget-content">
-                        {activeTodos.length > 0 ? (
-                            <ul className="mini-list">
-                                {activeTodos.slice(0, 4).map((todo) => (
-                                    <li key={todo.id} className="mini-list-item">
-                                        <span className="dot"></span>
-                                        <span className="text-truncate">{todo.text}</span>
-                                    </li>
-                                ))}
-                                {activeTodos.length > 4 && (
-                                    <li className="more-text">+{activeTodos.length - 4} more</li>
-                                )}
-                            </ul>
-                        ) : (
-                            <p className="no-data">All caught up! No active tasks.</p>
-                        )}
-                    </div>
-                </Card>
+                    <h2>Fitness</h2>
+                    <p>Track your workouts, BMI, and weight progress.</p>
+                </Link>
 
-                {/* Pins Widget */}
-                <Card noPadding={false} className="widget span-2">
-                    <div className="widget-header">
-                        <div className="widget-title">
-                            <Pin size={20} className="widget-icon" />
-                            <h2>Recent Pins</h2>
-                        </div>
-                        <Link to="/pins" className="widget-link">
-                            View All <ArrowRight size={16} />
-                        </Link>
+                <Link to="/pins" className="launcher-card">
+                    <div className="launcher-icon-container" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger)' }}>
+                        <Pin size={32} />
                     </div>
-                    <div className="widget-content pins-widget-grid">
-                        {recentPins.length > 0 ? (
-                            recentPins.map((pin) => (
-                                <div key={pin.id} className="mini-pin" style={{ borderTopColor: pin.color }}>
-                                    {pin.title && <h3>{pin.title}</h3>}
-                                    <p className="text-truncate-multi">{pin.content}</p>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="no-data">No pins created yet.</p>
-                        )}
-                    </div>
-                </Card>
+                    <h2>Pins</h2>
+                    <p>Save notes, ideas, and important links.</p>
+                </Link>
             </div>
         </div>
     );

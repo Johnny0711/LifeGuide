@@ -1,30 +1,40 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import api, { setAuthToken } from './services/apiService';
-import Sidebar from './components/Sidebar';
+import Navbar from './components/Navbar';
 import Todos from './components/Todos';
 import Pins from './components/Pins';
 import Workouts from './components/Workouts';
 import Dashboard from './components/Dashboard';
 import Habits from './components/Habits';
+import ProfileEdit from './components/ProfileEdit';
 
 function App() {
   const { isAuthenticated, isLoading, loginWithRedirect, getAccessTokenSilently } = useAuth0();
+  const [isTokenReady, setIsTokenReady] = useState(false);
 
   useEffect(() => {
     const syncUser = async () => {
-      try {
-        if (isAuthenticated) {
+      if (isAuthenticated) {
+        try {
           const token = await getAccessTokenSilently();
           setAuthToken(token);
+        } catch (err) {
+          console.error('Error getting token', err);
+        }
+
+        try {
           // Sync user profile to backend DB
           await api.post('/users/sync');
-        } else {
-          setAuthToken(null);
+        } catch (err) {
+          console.error('Error syncing user', err);
         }
-      } catch (err) {
-        console.error('Error syncing user or getting token', err);
+
+        setIsTokenReady(true);
+      } else {
+        setAuthToken(null);
+        setIsTokenReady(false);
       }
     };
 
@@ -33,7 +43,7 @@ function App() {
     }
   }, [isAuthenticated, isLoading, getAccessTokenSilently]);
 
-  if (isLoading) {
+  if (isLoading || (isAuthenticated && !isTokenReady)) {
     return (
       <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center', background: 'var(--bg-primary)' }}>
         <h2 style={{ color: 'var(--text-primary)' }}>Lade LifeGuide...</h2>
@@ -69,7 +79,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <Sidebar />
+      <Navbar />
       <main className="app-main">
         <Routes>
           <Route path="/" element={<Dashboard />} />
@@ -77,6 +87,7 @@ function App() {
           <Route path="/pins" element={<Pins />} />
           <Route path="/workouts" element={<Workouts />} />
           <Route path="/habits" element={<Habits />} />
+          <Route path="/profile" element={<ProfileEdit />} />
         </Routes>
       </main>
     </div>

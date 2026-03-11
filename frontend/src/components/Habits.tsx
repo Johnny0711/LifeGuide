@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/apiService';
 import { Plus, Trash2, Flame, CheckCircle, Circle } from 'lucide-react';
-import { HabitItem } from '../models/HabitItem';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';

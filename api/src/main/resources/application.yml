@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/lifeguide
     username: postgres
-    password: password # TODO: Change to your local DB password
+    password: lIFEgUIDE711 # TODO: Change to your local DB password
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,5 +20,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://YOUR_DOMAIN.eu.auth0.com/ # TODO: Change to your Auth0 domain
+          issuer-uri: https://dev-hpzi0rc0067cx1l0.us.auth0.com/ # TODO: Change to your Auth0 domain
           audiences: https://lifeguide-api # TODO: Change if you set a custom audience API in Auth0
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    

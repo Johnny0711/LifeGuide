@@ -32,7 +32,7 @@ public class HabitService {
     public Habit createHabit(String auth0Id, Habit habitData) {
         User user = userService.getUserByAuth0Id(auth0Id);
         habitData.setUser(user);
-        habitData.setCompletedDates(habitData.getCompletedDates() == null ? Collections.emptyList() : habitData.getCompletedDates());
+        habitData.setCompletedDates(habitData.getCompletedDates() == null ? new java.util.ArrayList<>() : habitData.getCompletedDates());
         return habitRepository.save(habitData);
     }
 

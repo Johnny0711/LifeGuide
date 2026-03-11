@@ -14,6 +14,7 @@ public class WorkoutSplit {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "workout_day")
     private String day;
     
     @Column(name = "split_name")

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/apiService';
 import { Check, Trash2, Plus } from 'lucide-react';
-import { TodoItem, type ITodo } from '../models/TodoItem';
+import { type ITodo } from '../models/TodoItem';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
