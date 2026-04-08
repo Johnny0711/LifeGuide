@@ -9,15 +9,15 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-java_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: java_app_db
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432" # Auskommentiert für mehr Sicherheit, der Container ist intern trotzdem erreichbar
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - lifeguide_network
+      - homeserver-net
 
   api:
-    build: 
+    build:
       context: ./api
       dockerfile: Dockerfile
     container_name: lifeguide_api
@@ -26,30 +26,41 @@ services:
       - db
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/java_app_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://lifeguide_db:5432/java_app_db
       - POSTGRES_USER=${POSTGRES_USER:-java_user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    ports:
-      - "8080:8080"
+      # NEU: Auth0 Variablen für dein Backend aus GitHub übernehmen
+      - AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
+      - AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE}
+    # ports:
+    #   - "8080:8080"
     networks:
-      - lifeguide_network
+      - homeserver-net
 
   frontend:
-    build: 
+    build:
       context: ./frontend
       dockerfile: Dockerfile
+      # NEU: Die Vite-Variablen für den Build-Prozess durchschleifen
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
+        VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
+        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
     container_name: lifeguide_frontend
     restart: always
-    ports:
-      - "80:80"
     depends_on:
       - api
+    # ports:
+    #   - "80:80"
     networks:
-      - lifeguide_network
+      - homeserver-net
 
 volumes:
   postgres_data:
 
+    # NEU: Wir verknüpfen dieses Projekt mit dem Netzwerk deines Haupt-Servers
 networks:
-  lifeguide_network:
-    driver: bridge
+  homeserver-net:
+    external: true
+    name: homeserver_homeserver-net

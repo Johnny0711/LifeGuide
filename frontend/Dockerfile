@@ -4,8 +4,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-# We need environment variables for build time, so usually we pass them via build args
-# But Vite natively injects them. When CI builds, CI must have secrets config.
+
+ARG VITE_API_URL
+ARG VITE_AUTH0_DOMAIN
+ARG VITE_AUTH0_CLIENT_ID
+ARG VITE_AUTH0_AUDIENCE
+
 RUN npm run build
 
 # Stage 2: Serve the app with Nginx
