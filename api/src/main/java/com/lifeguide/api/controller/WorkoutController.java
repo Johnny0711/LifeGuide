@@ -5,7 +5,7 @@ import com.lifeguide.api.model.WorkoutSplit;
 import com.lifeguide.api.service.WorkoutService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,41 +22,41 @@ public class WorkoutController {
     }
 
     @GetMapping
-    public List<WorkoutSplit> getWorkouts(@AuthenticationPrincipal Jwt jwt) {
-        return workoutService.getWorkoutsForUser(jwt.getSubject());
+    public List<WorkoutSplit> getWorkouts(@AuthenticationPrincipal UserDetails userDetails) {
+        return workoutService.getWorkoutsForUser(userDetails.getUsername());
     }
 
     @PostMapping
-    public WorkoutSplit createSplit(@AuthenticationPrincipal Jwt jwt, @RequestBody WorkoutSplit split) {
-        return workoutService.createSplit(jwt.getSubject(), split);
+    public WorkoutSplit createSplit(@AuthenticationPrincipal UserDetails userDetails, @RequestBody WorkoutSplit split) {
+        return workoutService.createSplit(userDetails.getUsername(), split);
     }
 
     @PutMapping("/{id}")
-    public WorkoutSplit updateSplit(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id, @RequestBody WorkoutSplit updates) {
-        return workoutService.updateSplit(jwt.getSubject(), id, updates);
+    public WorkoutSplit updateSplit(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID id, @RequestBody WorkoutSplit updates) {
+        return workoutService.updateSplit(userDetails.getUsername(), id, updates);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSplit(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
-        workoutService.deleteSplit(jwt.getSubject(), id);
+    public ResponseEntity<Void> deleteSplit(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID id) {
+        workoutService.deleteSplit(userDetails.getUsername(), id);
         return ResponseEntity.ok().build();
     }
 
     // --- EXERCISES ---
 
     @PostMapping("/{splitId}/exercises")
-    public Exercise addExercise(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID splitId, @RequestBody Exercise exercise) {
-        return workoutService.addExercise(jwt.getSubject(), splitId, exercise);
+    public Exercise addExercise(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID splitId, @RequestBody Exercise exercise) {
+        return workoutService.addExercise(userDetails.getUsername(), splitId, exercise);
     }
 
     @PutMapping("/{splitId}/exercises/{exerciseId}")
-    public Exercise updateExercise(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID splitId, @PathVariable UUID exerciseId, @RequestBody Exercise updates) {
-        return workoutService.updateExercise(jwt.getSubject(), splitId, exerciseId, updates);
+    public Exercise updateExercise(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID splitId, @PathVariable UUID exerciseId, @RequestBody Exercise updates) {
+        return workoutService.updateExercise(userDetails.getUsername(), splitId, exerciseId, updates);
     }
 
     @DeleteMapping("/{splitId}/exercises/{exerciseId}")
-    public ResponseEntity<Void> deleteExercise(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID splitId, @PathVariable UUID exerciseId) {
-        workoutService.deleteExercise(jwt.getSubject(), splitId, exerciseId);
+    public ResponseEntity<Void> deleteExercise(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID splitId, @PathVariable UUID exerciseId) {
+        workoutService.deleteExercise(userDetails.getUsername(), splitId, exerciseId);
         return ResponseEntity.ok().build();
     }
 }

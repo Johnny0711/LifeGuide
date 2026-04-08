@@ -14,33 +14,25 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    @Transactional
-    public User syncUser(String auth0Id, String email, String name) {
-        return userRepository.findByAuth0Id(auth0Id)
-                .map(user -> {
-                    // Update user info if it changed
-                    if (email != null) user.setEmail(email);
-                    if (name != null) user.setName(name);
-                    return userRepository.save(user);
-                })
-                .orElseGet(() -> {
-                    // Create new user explicitly referencing OOP domain creation
-                    User newUser = new User();
-                    newUser.setAuth0Id(auth0Id);
-                    newUser.setEmail(email != null ? email : "");
-                    newUser.setName(name);
-                    return userRepository.save(newUser);
-                });
+    public User registerUser(String email, String password, String name) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setName(name);
+        return userRepository.save(user);
     }
 
-    public User getUserByAuth0Id(String auth0Id) {
-        return userRepository.findByAuth0Id(auth0Id)
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Transactional
-    public User updateUserProfile(String auth0Id, com.lifeguide.api.dto.ProfileUpdateDto dto) {
-        User user = getUserByAuth0Id(auth0Id);
+    public User updateUserProfile(String email, com.lifeguide.api.dto.ProfileUpdateDto dto) {
+        User user = getUserByEmail(email);
         
         if (dto.getUsername() != null) user.setUsername(dto.getUsername());
         if (dto.getAge() != null) user.setAge(dto.getAge());

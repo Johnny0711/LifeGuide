@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, UUID> {
-    List<Todo> findByUserAuth0IdOrderByCreatedAtDesc(String auth0Id);
+    List<Todo> findByUserEmailOrderByCreatedAtDesc(String auth0Id);
 }

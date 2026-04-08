@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@Transactional
 public class TodoService {
 
     private final TodoRepository todoRepository;
@@ -19,31 +22,39 @@ public class TodoService {
         this.userService = userService;
     }
 
-    public List<Todo> getTodosForUser(String auth0Id) {
-        return todoRepository.findByUserAuth0IdOrderByCreatedAtDesc(auth0Id);
+    public List<Todo> getTodosForUser(String email) {
+        return todoRepository.findByUserEmailOrderByCreatedAtDesc(email);
     }
 
-    public Todo createTodo(String auth0Id, Todo todoData) {
-        User user = userService.getUserByAuth0Id(auth0Id);
+    public Todo createTodo(String email, Todo todoData) {
+        User user = userService.getUserByEmail(email);
         todoData.setUser(user);
         return todoRepository.save(todoData);
     }
 
-    public Todo toggleTodo(String auth0Id, UUID todoId) {
-        Todo todo = getOwnedTodo(auth0Id, todoId);
+    public Todo toggleTodo(String email, UUID todoId) {
+        Todo todo = getOwnedTodo(email, todoId);
         todo.setCompleted(!todo.isCompleted());
         return todoRepository.save(todo);
     }
 
-    public void deleteTodo(String auth0Id, UUID todoId) {
-        Todo todo = getOwnedTodo(auth0Id, todoId);
+    public Todo updateTodo(String email, UUID todoId, Todo updates) {
+        Todo todo = getOwnedTodo(email, todoId);
+        if (updates.getText() != null) {
+            todo.setText(updates.getText());
+        }
+        return todoRepository.save(todo);
+    }
+
+    public void deleteTodo(String email, UUID todoId) {
+        Todo todo = getOwnedTodo(email, todoId);
         todoRepository.delete(todo);
     }
 
-    private Todo getOwnedTodo(String auth0Id, UUID todoId) {
+    private Todo getOwnedTodo(String email, UUID todoId) {
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new RuntimeException("Todo not found"));
-        if (!todo.getUser().getAuth0Id().equals(auth0Id)) {
+        if (!todo.getUser().getEmail().equals(email)) {
             throw new RuntimeException("Unauthorized");
         }
         return todo;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/apiService';
-import { Check, Trash2, Plus } from 'lucide-react';
+import { Check, Trash2, Plus, Edit2 } from 'lucide-react';
 import { type ITodo } from '../models/TodoItem';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
@@ -11,6 +11,8 @@ const Todos: React.FC = () => {
     const [todos, setTodos] = useState<ITodo[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [inputValue, setInputValue] = useState('');
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editValue, setEditValue] = useState('');
 
     useEffect(() => {
         fetchTodos();
@@ -47,6 +49,26 @@ const Todos: React.FC = () => {
         } catch (error) {
             console.error('Failed to toggle todo', error);
         }
+    };
+
+    const saveEdit = async (id: string) => {
+        if (!editValue.trim()) {
+            setEditingId(null);
+            return;
+        }
+        try {
+            const response = await api.put(`/todos/${id}`, { text: editValue.trim() });
+            setTodos(prev => prev.map(t => (t.id === id ? response.data : t)));
+        } catch (error) {
+            console.error('Failed to update todo', error);
+        } finally {
+            setEditingId(null);
+        }
+    };
+
+    const startEditing = (todo: ITodo) => {
+        setEditingId(todo.id);
+        setEditValue(todo.text);
     };
 
     const deleteTodo = async (id: string) => {
@@ -103,7 +125,33 @@ const Todos: React.FC = () => {
                                         {todo.completed && <Check size={16} className="check-icon" />}
                                     </button>
 
-                                    <span className="todo-text">{todo.text}</span>
+                                    {editingId === todo.id ? (
+                                        <Input
+                                            value={editValue}
+                                            onChange={(e) => setEditValue(e.target.value)}
+                                            onBlur={() => saveEdit(todo.id)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') saveEdit(todo.id);
+                                                if (e.key === 'Escape') setEditingId(null);
+                                            }}
+                                            autoFocus
+                                            className="todo-edit-input"
+                                        />
+                                    ) : (
+                                        <span className="todo-text">{todo.text}</span>
+                                    )}
+
+                                    {editingId !== todo.id && (
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="todo-edit-btn"
+                                            onClick={() => startEditing(todo)}
+                                            aria-label="Edit task"
+                                        >
+                                            <Edit2 size={16} />
+                                        </Button>
+                                    )}
 
                                     <Button
                                         variant="ghost"

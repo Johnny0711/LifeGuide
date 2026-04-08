@@ -68,7 +68,13 @@ h6 {
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-primary);
+  line-height: 1.2;
 }
+
+h1 { font-size: clamp(2rem, 5vw, 3rem); }
+h2 { font-size: clamp(1.75rem, 4.5vw, 2.5rem); }
+h3 { font-size: clamp(1.5rem, 4vw, 2rem); }
+h4 { font-size: clamp(1.25rem, 3vw, 1.5rem); }
 
 a {
   color: var(--accent-primary);

@@ -20,14 +20,14 @@ public class FitnessLogService {
         this.userService = userService;
     }
 
-    public List<FitnessLog> getLogsForUser(String auth0Id) {
-        User user = userService.getUserByAuth0Id(auth0Id);
+    public List<FitnessLog> getLogsForUser(String email) {
+        User user = userService.getUserByEmail(email);
         return fitnessLogRepository.findByUserOrderByRecordedAtAsc(user);
     }
 
     @Transactional
-    public FitnessLog addLog(String auth0Id, FitnessLogDto dto) {
-        User user = userService.getUserByAuth0Id(auth0Id);
+    public FitnessLog addLog(String email, FitnessLogDto dto) {
+        User user = userService.getUserByEmail(email);
         
         FitnessLog log = new FitnessLog(user, dto.getWeightKg());
         FitnessLog savedLog = fitnessLogRepository.save(log);
@@ -36,5 +36,30 @@ public class FitnessLogService {
         user.setCurrentWeightKg(dto.getWeightKg());
         
         return savedLog;
+    }
+
+    @Transactional
+    public FitnessLog updateLog(String email, Long logId, FitnessLogDto dto) {
+        FitnessLog log = fitnessLogRepository.findById(logId)
+                .orElseThrow(() -> new RuntimeException("Fitness log not found"));
+        if (!log.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("Unauthorized");
+        }
+        log.setWeightKg(dto.getWeightKg());
+        
+        // Also update user's current weight
+        log.getUser().setCurrentWeightKg(dto.getWeightKg());
+        
+        return fitnessLogRepository.save(log);
+    }
+
+    @Transactional
+    public void deleteLog(String email, Long logId) {
+        FitnessLog log = fitnessLogRepository.findById(logId)
+                .orElseThrow(() -> new RuntimeException("Fitness log not found"));
+        if (!log.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("Unauthorized");
+        }
+        fitnessLogRepository.delete(log);
     }
 }

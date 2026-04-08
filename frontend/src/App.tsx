@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
-import api, { setAuthToken } from './services/apiService';
+import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Todos from './components/Todos';
 import Pins from './components/Pins';
@@ -9,41 +7,14 @@ import Workouts from './components/Workouts';
 import Dashboard from './components/Dashboard';
 import Habits from './components/Habits';
 import ProfileEdit from './components/ProfileEdit';
+import ShoppingLists from './components/ShoppingLists';
+import Messages from './components/Messages';
+import Auth from './components/Auth'; // Custom auth view
 
 function App() {
-  const { isAuthenticated, isLoading, loginWithRedirect, getAccessTokenSilently } = useAuth0();
-  const [isTokenReady, setIsTokenReady] = useState(false);
+  const { token, isLoading } = useAuth();
 
-  useEffect(() => {
-    const syncUser = async () => {
-      if (isAuthenticated) {
-        try {
-          const token = await getAccessTokenSilently();
-          setAuthToken(token);
-        } catch (err) {
-          console.error('Error getting token', err);
-        }
-
-        try {
-          // Sync user profile to backend DB
-          await api.post('/users/sync');
-        } catch (err) {
-          console.error('Error syncing user', err);
-        }
-
-        setIsTokenReady(true);
-      } else {
-        setAuthToken(null);
-        setIsTokenReady(false);
-      }
-    };
-
-    if (!isLoading) {
-      syncUser();
-    }
-  }, [isAuthenticated, isLoading, getAccessTokenSilently]);
-
-  if (isLoading || (isAuthenticated && !isTokenReady)) {
+  if (isLoading) {
     return (
       <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center', background: 'var(--bg-primary)' }}>
         <h2 style={{ color: 'var(--text-primary)' }}>Lade LifeGuide...</h2>
@@ -51,30 +22,8 @@ function App() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center', background: 'var(--bg-primary)' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h1 style={{ color: 'var(--text-primary)', marginBottom: '1rem' }}>Willkommen bei LifeGuide</h1>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Bitte melde dich an, um fortzufahren.</p>
-          <button
-            onClick={() => loginWithRedirect()}
-            style={{
-              background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
-              color: 'white',
-              border: 'none',
-              padding: '1rem 2rem',
-              borderRadius: '8px',
-              fontSize: '1.1rem',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            Login / Registrieren
-          </button>
-        </div>
-      </div>
-    );
+  if (!token) {
+    return <Auth />;
   }
 
   return (
@@ -87,6 +36,8 @@ function App() {
           <Route path="/pins" element={<Pins />} />
           <Route path="/workouts" element={<Workouts />} />
           <Route path="/habits" element={<Habits />} />
+          <Route path="/shopping-lists" element={<ShoppingLists />} />
+          <Route path="/messages" element={<Messages />} />
           <Route path="/profile" element={<ProfileEdit />} />
         </Routes>
       </main>

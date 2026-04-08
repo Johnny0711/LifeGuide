@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.Collections;
 
 @Service
+@Transactional
 public class HabitService {
 
     private final HabitRepository habitRepository;
@@ -22,28 +23,28 @@ public class HabitService {
         this.userService = userService;
     }
 
-    public List<Habit> getHabitsForUser(String auth0Id) {
-        List<Habit> habits = habitRepository.findByUserAuth0IdOrderByCreatedAtAsc(auth0Id);
+    public List<Habit> getHabitsForUser(String email) {
+        List<Habit> habits = habitRepository.findByUserEmailOrderByCreatedAtAsc(email);
         // Recalculate streaks dynamically when fetching
         habits.forEach(this::calculateStreaks);
         return habits;
     }
 
-    public Habit createHabit(String auth0Id, Habit habitData) {
-        User user = userService.getUserByAuth0Id(auth0Id);
+    public Habit createHabit(String email, Habit habitData) {
+        User user = userService.getUserByEmail(email);
         habitData.setUser(user);
         habitData.setCompletedDates(habitData.getCompletedDates() == null ? new java.util.ArrayList<>() : habitData.getCompletedDates());
         return habitRepository.save(habitData);
     }
 
-    public void deleteHabit(String auth0Id, UUID habitId) {
-        Habit habit = getOwnedHabit(auth0Id, habitId);
+    public void deleteHabit(String email, UUID habitId) {
+        Habit habit = getOwnedHabit(email, habitId);
         habitRepository.delete(habit);
     }
 
     @Transactional
-    public Habit toggleCompletion(String auth0Id, UUID habitId, LocalDate date) {
-        Habit habit = getOwnedHabit(auth0Id, habitId);
+    public Habit toggleCompletion(String email, UUID habitId, LocalDate date) {
+        Habit habit = getOwnedHabit(email, habitId);
         List<LocalDate> dates = habit.getCompletedDates();
         
         if (dates.contains(date)) {
@@ -56,18 +57,18 @@ public class HabitService {
         return habitRepository.save(habit);
     }
 
-    public Habit updateHabit(String auth0Id, UUID habitId, Habit updates) {
-        Habit habit = getOwnedHabit(auth0Id, habitId);
+    public Habit updateHabit(String email, UUID habitId, Habit updates) {
+        Habit habit = getOwnedHabit(email, habitId);
         if (updates.getTitle() != null) habit.setTitle(updates.getTitle());
         if (updates.getIcon() != null) habit.setIcon(updates.getIcon());
         if (updates.getColor() != null) habit.setColor(updates.getColor());
         return habitRepository.save(habit);
     }
 
-    private Habit getOwnedHabit(String auth0Id, UUID habitId) {
+    private Habit getOwnedHabit(String email, UUID habitId) {
         Habit habit = habitRepository.findById(habitId)
                 .orElseThrow(() -> new RuntimeException("Habit not found"));
-        if (!habit.getUser().getAuth0Id().equals(auth0Id)) {
+        if (!habit.getUser().getEmail().equals(email)) {
             throw new RuntimeException("Unauthorized");
         }
         return habit;

@@ -11,10 +11,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private java.util.UUID id;
 
-    @Column(name = "auth0_id", unique = true, nullable = false)
-    private String auth0Id; // e.g., "auth0|12345"
-    
     @Column(nullable = false)
+    private String password;
+    
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String name;
@@ -43,12 +43,12 @@ public class User {
         this.id = id;
     }
 
-    public String getAuth0Id() {
-        return auth0Id;
+    public String getPassword() {
+        return password;
     }
 
-    public void setAuth0Id(String auth0Id) {
-        this.auth0Id = auth0Id;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {

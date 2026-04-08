@@ -4,7 +4,7 @@ import com.lifeguide.api.model.Habit;
 import com.lifeguide.api.service.HabitService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -22,32 +22,32 @@ public class HabitController {
     }
 
     @GetMapping
-    public List<Habit> getHabits(@AuthenticationPrincipal Jwt jwt) {
-        return habitService.getHabitsForUser(jwt.getSubject());
+    public List<Habit> getHabits(@AuthenticationPrincipal UserDetails userDetails) {
+        return habitService.getHabitsForUser(userDetails.getUsername());
     }
 
     @PostMapping
-    public Habit createHabit(@AuthenticationPrincipal Jwt jwt, @RequestBody Habit habit) {
-        return habitService.createHabit(jwt.getSubject(), habit);
+    public Habit createHabit(@AuthenticationPrincipal UserDetails userDetails, @RequestBody Habit habit) {
+        return habitService.createHabit(userDetails.getUsername(), habit);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteHabit(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
-        habitService.deleteHabit(jwt.getSubject(), id);
+    public ResponseEntity<Void> deleteHabit(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID id) {
+        habitService.deleteHabit(userDetails.getUsername(), id);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}/toggle")
     public Habit toggleCompletion(
-            @AuthenticationPrincipal Jwt jwt, 
+            @AuthenticationPrincipal UserDetails userDetails, 
             @PathVariable UUID id, 
             @RequestParam String date) {
         // Date mapping expected as ISO format yyyy-MM-dd
-        return habitService.toggleCompletion(jwt.getSubject(), id, LocalDate.parse(date));
+        return habitService.toggleCompletion(userDetails.getUsername(), id, LocalDate.parse(date));
     }
 
     @PutMapping("/{id}")
-    public Habit updateHabit(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id, @RequestBody Habit habit) {
-        return habitService.updateHabit(jwt.getSubject(), id, habit);
+    public Habit updateHabit(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID id, @RequestBody Habit habit) {
+        return habitService.updateHabit(userDetails.getUsername(), id, habit);
     }
 }

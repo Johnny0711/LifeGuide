@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CheckSquare, Flame, Dumbbell, Pin } from 'lucide-react';
+import { CheckSquare, Flame, Dumbbell, Pin, ShoppingCart } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -44,6 +44,14 @@ const Dashboard: React.FC = () => {
                     </div>
                     <h2>Pins</h2>
                     <p>Save notes, ideas, and important links.</p>
+                </Link>
+
+                <Link to="/shopping-lists" className="launcher-card">
+                    <div className="launcher-icon-container" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-secondary)' }}>
+                        <ShoppingCart size={32} />
+                    </div>
+                    <h2>Shopping Lists</h2>
+                    <p>Create and share shopping lists with friends.</p>
                 </Link>
             </div>
         </div>

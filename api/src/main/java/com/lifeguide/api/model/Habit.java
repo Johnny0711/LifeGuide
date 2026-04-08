@@ -1,5 +1,6 @@
 package com.lifeguide.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -20,7 +21,7 @@ public class Habit {
     private int currentStreak;
     private int longestStreak;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "habit_completions", joinColumns = @JoinColumn(name = "habit_id"))
     @Column(name = "completion_date")
     private List<LocalDate> completedDates;
@@ -30,6 +31,7 @@ public class Habit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     public Habit() {}

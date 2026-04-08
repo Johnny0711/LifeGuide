@@ -1,9 +1,10 @@
 package com.lifeguide.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -20,14 +21,15 @@ public class WorkoutSplit {
     @Column(name = "split_name")
     private String splitName;
 
-    @OneToMany(mappedBy = "workoutSplit", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Exercise> exercises = new ArrayList<>();
+    @OneToMany(mappedBy = "workoutSplit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<Exercise> exercises = new HashSet<>();
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     public WorkoutSplit() {}
@@ -39,8 +41,8 @@ public class WorkoutSplit {
     public void setDay(String day) { this.day = day; }
     public String getSplitName() { return splitName; }
     public void setSplitName(String splitName) { this.splitName = splitName; }
-    public List<Exercise> getExercises() { return exercises; }
-    public void setExercises(List<Exercise> exercises) { this.exercises = exercises; }
+    public Set<Exercise> getExercises() { return exercises; }
+    public void setExercises(Set<Exercise> exercises) { this.exercises = exercises; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public User getUser() { return user; }

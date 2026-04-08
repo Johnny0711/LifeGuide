@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface WorkoutSplitRepository extends JpaRepository<WorkoutSplit, UUID> {
-    List<WorkoutSplit> findByUserAuth0IdOrderByCreatedAtAsc(String auth0Id);
+    List<WorkoutSplit> findByUserEmailOrderByCreatedAtAsc(String auth0Id);
 }

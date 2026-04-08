@@ -1,0 +1,45 @@
+
+> Task :compileJava FAILED
+C:\Users\jonis\Desktop\LifeGuide\api\src\main\java\com\lifeguide\api\config\SecurityConfig.java:53: Fehler: Konstruktor DaoAuthenticationProvider in Klasse DaoAuthenticationProvider kann nicht auf die angegebenen Typen angewendet werden.
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+                                                 ^
+  Erforderlich: UserDetailsService
+  Ermittelt:    keine Argumente
+  Grund: Liste der tatsächlichen Argumente hat eine andere Länge als die der formalen Argumente
+C:\Users\jonis\Desktop\LifeGuide\api\src\main\java\com\lifeguide\api\config\SecurityConfig.java:54: Fehler: Symbol nicht gefunden
+        authProvider.setUserDetailsService(userDetailsService);
+                    ^
+  Symbol: Methode setUserDetailsService(CustomUserDetailsService)
+  Ort: Variable authProvider von Typ DaoAuthenticationProvider
+Hinweis: C:\Users\jonis\Desktop\LifeGuide\api\src\main\java\com\lifeguide\api\security\JwtAuthenticationFilter.java verwendet oder überschreibt eine veraltete API.
+Hinweis: Wiederholen Sie die Kompilierung mit -Xlint:deprecation, um Details zu erhalten.
+2 Fehler
+
+[Incubating] Problems report is available at: file:///C:/Users/jonis/Desktop/LifeGuide/api/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler output below.
+  Hinweis: C:\Users\jonis\Desktop\LifeGuide\api\src\main\java\com\lifeguide\api\security\JwtAuthenticationFilter.java verwendet oder überschreibt eine veraltete API.
+  C:\Users\jonis\Desktop\LifeGuide\api\src\main\java\com\lifeguide\api\config\SecurityConfig.java:53: Fehler: Konstruktor DaoAuthenticationProvider in Klasse DaoAuthenticationProvider kann nicht auf die angegebenen Typen angewendet werden.
+          DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+                                                   ^
+    Erforderlich: UserDetailsService
+    Ermittelt:    keine Argumente
+    Grund: Liste der tatsächlichen Argumente hat eine andere Länge als die der formalen Argumente
+  Hinweis: Wiederholen Sie die Kompilierung mit -Xlint:deprecation, um Details zu erhalten.
+  C:\Users\jonis\Desktop\LifeGuide\api\src\main\java\com\lifeguide\api\config\SecurityConfig.java:54: Fehler: Symbol nicht gefunden
+          authProvider.setUserDetailsService(userDetailsService);
+                      ^
+    Symbol: Methode setUserDetailsService(CustomUserDetailsService)
+    Ort: Variable authProvider von Typ DaoAuthenticationProvider
+  2 Fehler
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 2s
+1 actionable task: 1 executed

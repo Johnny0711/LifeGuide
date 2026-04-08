@@ -38,6 +38,7 @@ const Workouts: React.FC = () => {
             const formattedLogs = logsRes.data
                 .sort((a: any, b: any) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime())
                 .map((log: any) => ({
+                    id: log.id,
                     date: new Date(log.recordedAt).toLocaleDateString(),
                     weight: log.weightKg
                 }));
@@ -56,6 +57,15 @@ const Workouts: React.FC = () => {
             fetchProgressData();
         } catch (error) {
             console.error('Failed to log weight', error);
+        }
+    };
+
+    const handleDeleteLog = async (logId: string) => {
+        try {
+            await api.delete(`/fitness-logs/${logId}`);
+            fetchProgressData();
+        } catch (error) {
+            console.error('Failed to delete log', error);
         }
     };
 
@@ -406,6 +416,22 @@ const Workouts: React.FC = () => {
                                     <Button onClick={handleLogWeight} variant="primary">Log It</Button>
                                 </div>
                             </div>
+                            
+                            {fitnessLogs.length > 0 && (
+                                <div className="log-history-section" style={{ marginTop: '2rem' }}>
+                                    <h4>History</h4>
+                                    <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        {[...fitnessLogs].reverse().slice(0, 5).map(log => (
+                                            <li key={log.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '0.5rem 1rem', borderRadius: 'var(--radius-sm)' }}>
+                                                <span>{log.date} - <strong>{log.weight} kg</strong></span>
+                                                <Button variant="ghost" size="sm" onClick={() => handleDeleteLog(log.id)} style={{ color: 'var(--danger)' }}>
+                                                    <Trash2 size={16} />
+                                                </Button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                         </Card>
 
                         <Card noPadding={false} className="chart-card">

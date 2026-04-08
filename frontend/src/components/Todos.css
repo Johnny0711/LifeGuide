@@ -17,6 +17,12 @@
     padding: 2rem;
 }
 
+@media (max-width: 768px) {
+    .todos-content {
+        padding: 1rem 0;
+    }
+}
+
 /* OOP components handle button and input styling */
 
 .add-todo-form {
@@ -47,6 +53,13 @@
     border: 1px solid transparent;
     transition: all var(--transition-normal);
     animation: fadeIn 0.3s ease forwards;
+}
+
+@media (max-width: 768px) {
+    .todo-item {
+        padding: 0.8rem;
+        gap: 0.5rem;
+    }
 }
 
 .todo-item:hover {
@@ -84,18 +97,49 @@
     flex: 1;
     font-size: 1.05rem;
     transition: color var(--transition-fast);
+    word-break: break-word;
 }
 
+@media (max-width: 768px) {
+    .todo-text {
+        font-size: 0.95rem;
+    }
+}
+
+.todo-edit-btn,
 .todo-delete-btn {
     opacity: 0;
 }
 
+.todo-item:hover .todo-edit-btn,
 .todo-item:hover .todo-delete-btn {
     opacity: 1;
 }
 
+@media (max-width: 768px) {
+    .todo-edit-btn,
+    .todo-delete-btn {
+        opacity: 1;
+    }
+}
+
 .todo-delete-btn:hover {
     color: var(--danger) !important;
+}
+
+.todo-edit-btn:hover {
+    color: var(--accent-primary) !important;
+}
+
+.todo-edit-input {
+    flex: 1;
+    font-size: 1.05rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--accent-primary);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    outline: none;
 }
 
 .empty-state {

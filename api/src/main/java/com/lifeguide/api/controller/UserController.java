@@ -4,7 +4,7 @@ import com.lifeguide.api.model.User;
 import com.lifeguide.api.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,14 +17,17 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/sync")
-    public ResponseEntity<User> syncUser(@AuthenticationPrincipal Jwt jwt) {
-        String auth0Id = jwt.getSubject();
-        // Claims like email and name must be requested in the Auth0 configuration payload
-        String email = jwt.getClaimAsString("email");
-        String name = jwt.getClaimAsString("name");
-
-        User user = userService.syncUser(auth0Id, email, name);
+    @GetMapping("/me")
+    public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserByEmail(userDetails.getUsername());
         return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<User> updateProfile(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody com.lifeguide.api.dto.ProfileUpdateDto dto) {
+        User updatedUser = userService.updateUserProfile(userDetails.getUsername(), dto);
+        return ResponseEntity.ok(updatedUser);
     }
 }

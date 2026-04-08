@@ -5,7 +5,7 @@ import com.lifeguide.api.model.User;
 import com.lifeguide.api.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,15 +19,15 @@ public class ProfileController {
     }
 
     @GetMapping
-    public ResponseEntity<User> getProfile(@AuthenticationPrincipal Jwt jwt) {
-        String auth0Id = jwt.getSubject();
-        User user = userService.getUserByAuth0Id(auth0Id);
+    public ResponseEntity<User> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
+        String auth0Id = userDetails.getUsername();
+        User user = userService.getUserByEmail(auth0Id);
         return ResponseEntity.ok(user);
     }
 
     @PutMapping
-    public ResponseEntity<User> updateProfile(@AuthenticationPrincipal Jwt jwt, @RequestBody ProfileUpdateDto updateDto) {
-        String auth0Id = jwt.getSubject();
+    public ResponseEntity<User> updateProfile(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ProfileUpdateDto updateDto) {
+        String auth0Id = userDetails.getUsername();
         User updatedUser = userService.updateUserProfile(auth0Id, updateDto);
         return ResponseEntity.ok(updatedUser);
     }
