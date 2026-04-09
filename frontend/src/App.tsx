@@ -11,6 +11,8 @@ import ShoppingLists from './components/ShoppingLists';
 import Messages from './components/Messages';
 import Auth from './components/Auth'; // Custom auth view
 
+console.log("Frontend Version mit neuem API-Routing geladen!");
+
 function App() {
   const { token, isLoading } = useAuth();
 
