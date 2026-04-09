@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM gradle:8.5-jdk21 AS build
+FROM gradle:jdk21 AS build
 WORKDIR /app
 COPY build.gradle settings.gradle ./
 COPY src ./src
