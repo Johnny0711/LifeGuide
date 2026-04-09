@@ -3,17 +3,17 @@ name: Deploy LifeGuide to Homeserver
 on:
   push:
     branches:
-      - main  # Startet, wenn du auf main pushst
+      - main
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Das nutzt deinen lokalen Runner!
+    runs-on: self-hosted
     
     steps:
-      - name: Code vom Repository herunterladen
+      - name: Download code from repository
         uses: actions/checkout@v4
 
-      - name: Alte Container stoppen und Neue bauen
+      - name: Stop old containers and build new ones
         env:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
@@ -22,5 +22,5 @@ jobs:
           VITE_AUTH0_CLIENT_ID: ${{ secrets.VITE_AUTH0_CLIENT_ID }}
           VITE_AUTH0_AUDIENCE: ${{ secrets.VITE_AUTH0_AUDIENCE }}
         run: |
-          docker compose down
-          docker compose up -d --build
+          docker compose -f docker-compose.yml down
+          docker compose -f docker-compose.yml up -d --build
