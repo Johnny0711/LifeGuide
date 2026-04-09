@@ -18,6 +18,7 @@ public class Exercise {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_split_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private WorkoutSplit workoutSplit;
 
     public Exercise() {}
