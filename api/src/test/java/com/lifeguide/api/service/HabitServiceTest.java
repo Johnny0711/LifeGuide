@@ -39,7 +39,7 @@ class HabitServiceTest {
     @BeforeEach
     void setUp() {
         mockUser = new User();
-        mockUser.setAuth0Id("auth0|123");
+        mockUser.setEmail("test@example.com");
 
         mockHabit = new Habit();
         mockHabit.setId(UUID.randomUUID());
@@ -49,10 +49,10 @@ class HabitServiceTest {
 
     @Test
     void testCalculateStreaks_NoCompletions() {
-        when(habitRepository.findByUserAuth0IdOrderByCreatedAtAsc("auth0|123"))
+        when(habitRepository.findByUserEmailOrderByCreatedAtAsc("test@example.com"))
                 .thenReturn(List.of(mockHabit));
 
-        List<Habit> results = habitService.getHabitsForUser("auth0|123");
+        List<Habit> results = habitService.getHabitsForUser("test@example.com");
         
         assertEquals(1, results.size());
         assertEquals(0, results.get(0).getCurrentStreak());
@@ -68,10 +68,10 @@ class HabitServiceTest {
                 today
         )));
 
-        when(habitRepository.findByUserAuth0IdOrderByCreatedAtAsc("auth0|123"))
+        when(habitRepository.findByUserEmailOrderByCreatedAtAsc("test@example.com"))
                 .thenReturn(List.of(mockHabit));
 
-        List<Habit> results = habitService.getHabitsForUser("auth0|123");
+        List<Habit> results = habitService.getHabitsForUser("test@example.com");
         
         assertEquals(3, results.get(0).getCurrentStreak());
         assertEquals(3, results.get(0).getLongestStreak());
@@ -88,10 +88,10 @@ class HabitServiceTest {
                 today               // new streak 2
         )));
 
-        when(habitRepository.findByUserAuth0IdOrderByCreatedAtAsc("auth0|123"))
+        when(habitRepository.findByUserEmailOrderByCreatedAtAsc("test@example.com"))
                 .thenReturn(List.of(mockHabit));
 
-        List<Habit> results = habitService.getHabitsForUser("auth0|123");
+        List<Habit> results = habitService.getHabitsForUser("test@example.com");
         
         assertEquals(2, results.get(0).getCurrentStreak());
         assertEquals(3, results.get(0).getLongestStreak());
@@ -103,7 +103,7 @@ class HabitServiceTest {
         when(habitRepository.findById(mockHabit.getId())).thenReturn(Optional.of(mockHabit));
         when(habitRepository.save(any(Habit.class))).thenReturn(mockHabit);
 
-        Habit result = habitService.toggleCompletion("auth0|123", mockHabit.getId(), today);
+        Habit result = habitService.toggleCompletion("test@example.com", mockHabit.getId(), today);
         
         assertEquals(1, result.getCompletedDates().size());
         assertEquals(today, result.getCompletedDates().get(0));

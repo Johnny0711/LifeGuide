@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/apiService';
 import './Profile.css';
 
 const Profile: React.FC = () => {
-    const { user } = useAuth0();
+    const { user } = useAuth();
     const [profileData, setProfileData] = useState({
         username: '',
         age: '',
@@ -68,7 +68,7 @@ const Profile: React.FC = () => {
     return (
         <div className="profile-container animate-fade-in">
             <header className="profile-header">
-                <img src={user?.picture || 'https://via.placeholder.com/100'} alt="Profile" className="profile-large-pic" />
+                <img src={'https://via.placeholder.com/100'} alt="Profile" className="profile-large-pic" />
                 <div className="profile-info-readonly">
                     <h2>{user?.name}</h2>
                     <p>{user?.email}</p>

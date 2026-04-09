@@ -10,7 +10,7 @@ const api = axios.create({
     }
 });
 
-// A helper function to inject the Auth0 Token into every request
+// A helper function to inject the auth token into every request
 export const setAuthToken = (token: string | null) => {
     if (token) {
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;

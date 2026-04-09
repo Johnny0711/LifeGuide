@@ -29,9 +29,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://lifeguide_db:5432/java_app_db
       - POSTGRES_USER=${POSTGRES_USER:-java_user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      # NEU: Auth0 Variablen für dein Backend aus GitHub übernehmen
-      - AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
-      - AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE}
+
     # ports:
     #   - "8080:8080"
     networks:
@@ -44,9 +42,6 @@ services:
       # NEU: Die Vite-Variablen für den Build-Prozess durchschleifen
       args:
         VITE_API_URL: ${VITE_API_URL}
-        VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
-        VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
-        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
     container_name: lifeguide_frontend
     restart: always
     depends_on:

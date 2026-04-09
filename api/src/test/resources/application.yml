@@ -8,8 +8,3 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://dev-000000.auth0.com/

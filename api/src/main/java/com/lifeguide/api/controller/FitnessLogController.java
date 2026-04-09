@@ -22,16 +22,16 @@ public class FitnessLogController {
 
     @GetMapping
     public ResponseEntity<List<FitnessLog>> getLogs(@AuthenticationPrincipal UserDetails userDetails) {
-        String auth0Id = userDetails.getUsername();
-        return ResponseEntity.ok(fitnessLogService.getLogsForUser(auth0Id));
+        String email = userDetails.getUsername();
+        return ResponseEntity.ok(fitnessLogService.getLogsForUser(email));
     }
 
     @PostMapping
     public ResponseEntity<FitnessLog> addLog(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody FitnessLogDto dto) {
-        String auth0Id = userDetails.getUsername();
-        return ResponseEntity.ok(fitnessLogService.addLog(auth0Id, dto));
+        String email = userDetails.getUsername();
+        return ResponseEntity.ok(fitnessLogService.addLog(email, dto));
     }
 
     @PutMapping("/{id}")
@@ -39,16 +39,16 @@ public class FitnessLogController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id,
             @RequestBody FitnessLogDto dto) {
-        String auth0Id = userDetails.getUsername();
-        return ResponseEntity.ok(fitnessLogService.updateLog(auth0Id, id, dto));
+        String email = userDetails.getUsername();
+        return ResponseEntity.ok(fitnessLogService.updateLog(email, id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLog(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id) {
-        String auth0Id = userDetails.getUsername();
-        fitnessLogService.deleteLog(auth0Id, id);
+        String email = userDetails.getUsername();
+        fitnessLogService.deleteLog(email, id);
         return ResponseEntity.ok().build();
     }
 }

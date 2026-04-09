@@ -20,15 +20,15 @@ public class ProfileController {
 
     @GetMapping
     public ResponseEntity<User> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        String auth0Id = userDetails.getUsername();
-        User user = userService.getUserByEmail(auth0Id);
+        String email = userDetails.getUsername();
+        User user = userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
 
     @PutMapping
     public ResponseEntity<User> updateProfile(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ProfileUpdateDto updateDto) {
-        String auth0Id = userDetails.getUsername();
-        User updatedUser = userService.updateUserProfile(auth0Id, updateDto);
+        String email = userDetails.getUsername();
+        User updatedUser = userService.updateUserProfile(email, updateDto);
         return ResponseEntity.ok(updatedUser);
     }
 }

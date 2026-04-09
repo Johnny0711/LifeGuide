@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface PinRepository extends JpaRepository<Pin, UUID> {
-    List<Pin> findByUserEmailOrderByCreatedAtDesc(String auth0Id);
+    List<Pin> findByUserEmailOrderByCreatedAtDesc(String email);
 }
