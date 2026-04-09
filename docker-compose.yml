@@ -58,4 +58,4 @@ volumes:
 networks:
   homeserver-net:
     external: true
-    name: homeserver_homeserver-net
+    name: homeserver-net
