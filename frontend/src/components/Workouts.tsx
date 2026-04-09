@@ -35,14 +35,18 @@ const Workouts: React.FC = () => {
             setProfileData(profileRes.data);
 
             // Format logs for Recharts
-            const formattedLogs = logsRes.data
-                .sort((a: any, b: any) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime())
-                .map((log: any) => ({
-                    id: log.id,
-                    date: new Date(log.recordedAt).toLocaleDateString(),
-                    weight: log.weightKg
-                }));
-            setFitnessLogs(formattedLogs);
+            if (Array.isArray(logsRes.data)) {
+                const formattedLogs = logsRes.data
+                    .sort((a: any, b: any) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime())
+                    .map((log: any) => ({
+                        id: log.id,
+                        date: new Date(log.recordedAt).toLocaleDateString(),
+                        weight: log.weightKg
+                    }));
+                setFitnessLogs(formattedLogs);
+            } else {
+                setFitnessLogs([]);
+            }
         } catch (error) {
             console.error('Failed to fetch progress data', error);
         }
@@ -87,7 +91,12 @@ const Workouts: React.FC = () => {
     const fetchSplits = async () => {
         try {
             const response = await api.get('/workouts');
-            setSplits(response.data);
+            if (Array.isArray(response.data)) {
+                setSplits(response.data);
+            } else {
+                console.error('Expected array of workouts, got:', response.data);
+                setSplits([]);
+            }
         } catch (error) {
             console.error('Failed to fetch workouts', error);
         } finally {

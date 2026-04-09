@@ -21,7 +21,11 @@ const Todos: React.FC = () => {
     const fetchTodos = async () => {
         try {
             const response = await api.get('/todos');
-            setTodos(response.data);
+            if (Array.isArray(response.data)) {
+                setTodos(response.data);
+            } else {
+                setTodos([]);
+            }
         } catch (error) {
             console.error('Failed to fetch todos', error);
         } finally {

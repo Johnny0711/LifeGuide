@@ -19,7 +19,11 @@ const Habits: React.FC = () => {
     const fetchHabits = async () => {
         try {
             const response = await api.get('/habits');
-            setHabits(response.data);
+            if (Array.isArray(response.data)) {
+                setHabits(response.data);
+            } else {
+                setHabits([]);
+            }
         } catch (error) {
             console.error('Failed to fetch habits', error);
         } finally {
