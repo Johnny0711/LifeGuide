@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Settings, LogOut, User } from 'lucide-react';
+import { Mail, Settings, LogOut } from 'lucide-react';
 import api from '../services/apiService';
 import './Navbar.css';
 
