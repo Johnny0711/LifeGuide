@@ -146,33 +146,40 @@ const Workouts: React.FC = () => {
     };
 
     const addSplit = async () => {
-        const title = prompt('Enter routine name (e.g. Chest & Triceps):');
-        if (!title) return;
         try {
-            const response = await api.post('/workouts', { title, dayOfWeek: 'ANY' });
+            const response = await api.post('/workouts', { day: 'Monday', splitName: 'Body Focus' });
             setSplits(prev => [...prev, response.data]);
+            setExpandedDay(response.data.id);
+            setIsEditMode(true);
         } catch (error) {
             console.error('Failed to create split', error);
         }
     };
 
     const addExercise = async (workoutId: string) => {
-        const name = prompt('Name of exercise:');
-        if (!name) return;
         try {
-            const response = await api.post(`/workouts/${workoutId}/exercises`, { name, sets: 3, reps: '10-12', currentWeight: 0 });
+            const response = await api.post(`/workouts/${workoutId}/exercises`, { name: 'New Exercise', sets: 3, reps: 10, weight: 0 });
             setSplits(prev => prev.map(s => (s.id === workoutId ? response.data : s)));
         } catch (error) {
             console.error('Failed to add exercise', error);
         }
     };
 
-    const updateWeight = async (workoutId: string, exerciseId: string, weight: number) => {
+    const updateSplit = async (id: string, updates: any) => {
         try {
-            const response = await api.put(`/workouts/${workoutId}/exercises/${exerciseId}`, { currentWeight: weight });
+            const response = await api.put(`/workouts/${id}`, updates);
+            setSplits(prev => prev.map(s => (s.id === id ? response.data : s)));
+        } catch (error) {
+            console.error('Failed to update split', error);
+        }
+    };
+
+    const updateExercise = async (workoutId: string, exerciseId: string, updates: any) => {
+        try {
+            const response = await api.put(`/workouts/${workoutId}/exercises/${exerciseId}`, updates);
             setSplits(prev => prev.map(s => (s.id === workoutId ? response.data : s)));
         } catch (error) {
-            console.error('Failed to update exercise weight', error);
+            console.error('Failed to update exercise', error);
         }
     };
 
@@ -224,11 +231,11 @@ const Workouts: React.FC = () => {
                             New Routine
                         </Button>
                         <Button
-                            variant="secondary"
+                            variant={isEditMode ? "primary" : "secondary"}
                             onClick={() => setIsEditMode(!isEditMode)}
                             leftIcon={isEditMode ? <Check size={18} /> : <Edit2 size={18} />}
                         >
-                            {isEditMode ? 'Done Editing' : 'Edit Routines'}
+                            {isEditMode ? 'Save & Exit Edit' : 'Edit Routines'}
                         </Button>
                     </div>
 
@@ -241,9 +248,32 @@ const Workouts: React.FC = () => {
                             splits.map(split => (
                                 <Card key={split.id} className={`split-card-oop ${expandedDay === split.id ? 'expanded' : ''}`} noPadding>
                                     <div className="split-header" onClick={() => setExpandedDay(expandedDay === split.id ? null : split.id)}>
-                                        <div className="split-title">
-                                            <h3>{split.title}</h3>
-                                            <span className="exercise-count">{split.exercises?.length || 0} Exercises</span>
+                                        <div className="split-title-group">
+                                            {isEditMode ? (
+                                                <div className="split-edit-inputs">
+                                                    <input
+                                                        type="text"
+                                                        value={split.day}
+                                                        onChange={(e) => updateSplit(split.id, { day: e.target.value })}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="split-day-input"
+                                                        placeholder="Day (e.g. Monday)"
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        value={split.splitName}
+                                                        onChange={(e) => updateSplit(split.id, { splitName: e.target.value })}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="split-name-input"
+                                                        placeholder="Muscle Group (e.g. Chest)"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <h3>{split.day}</h3>
+                                                    <span className="split-subtitle">{split.splitName}</span>
+                                                </>
+                                            )}
                                         </div>
                                         <div className="split-meta">
                                             {isEditMode && (
@@ -267,16 +297,56 @@ const Workouts: React.FC = () => {
                                                     split.exercises.map((ex: any) => (
                                                         <Card key={ex.id} className="exercise-item-oop">
                                                             <div className="ex-info">
-                                                                <h4>{ex.name}</h4>
-                                                                <p>{ex.sets} Sets × {ex.reps} Reps</p>
+                                                                {isEditMode ? (
+                                                                    <div className="ex-edit-header">
+                                                                        <input
+                                                                            type="text"
+                                                                            value={ex.name}
+                                                                            onChange={(e) => updateExercise(split.id, ex.id, { name: e.target.value })}
+                                                                            className="ex-name-input-edit"
+                                                                            placeholder="Exercise name"
+                                                                        />
+                                                                    </div>
+                                                                ) : (
+                                                                    <h4>{ex.name}</h4>
+                                                                )}
+                                                                
+                                                                <div className="ex-metrics-row">
+                                                                    <div className="metric">
+                                                                        <span>Sets:</span>
+                                                                        {isEditMode ? (
+                                                                            <input
+                                                                                type="number"
+                                                                                value={ex.sets}
+                                                                                onChange={(e) => updateExercise(split.id, ex.id, { sets: Number(e.target.value) })}
+                                                                                className="metric-input-small"
+                                                                            />
+                                                                        ) : (
+                                                                            <strong>{ex.sets}</strong>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="metric">
+                                                                        <span>Reps:</span>
+                                                                        {isEditMode ? (
+                                                                            <input
+                                                                                type="number"
+                                                                                value={ex.reps}
+                                                                                onChange={(e) => updateExercise(split.id, ex.id, { reps: Number(e.target.value) })}
+                                                                                className="metric-input-small"
+                                                                            />
+                                                                        ) : (
+                                                                            <strong>{ex.reps}</strong>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
                                                             </div>
 
                                                             <div className="ex-inputs">
                                                                 <div className="weight-input-group">
-                                                                    <Input
+                                                                    <input
                                                                         type="number"
-                                                                        value={ex.currentWeight || ''}
-                                                                        onChange={(e) => updateWeight(split.id, ex.id, parseFloat(e.target.value))}
+                                                                        value={ex.weight || ''}
+                                                                        onChange={(e) => updateExercise(split.id, ex.id, { weight: parseFloat(e.target.value) })}
                                                                         placeholder="0"
                                                                         className="weight-input"
                                                                     />

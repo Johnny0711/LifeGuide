@@ -46,6 +46,9 @@
     font-weight: 600;
     transition: all var(--transition-normal);
     color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
 }
 
 .tab-switcher button:hover {
@@ -103,17 +106,51 @@
     background: rgba(255, 255, 255, 0.05);
 }
 
-.split-title h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.25rem;
+.split-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.split-title-group h3 {
+    font-size: 1.35rem;
+    margin: 0;
     color: var(--text-primary);
 }
 
-.exercise-count {
-    font-size: 0.85rem;
+.split-subtitle {
+    font-size: 0.95rem;
     color: var(--accent-primary);
     font-weight: 600;
     opacity: 0.8;
+}
+
+.split-edit-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 300px;
+}
+
+.split-day-input {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.5rem;
+}
+
+.split-name-input {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 0.2rem 0.5rem;
 }
 
 .split-meta {
@@ -156,17 +193,60 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-md);
     flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.ex-info {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
 }
 
 .ex-info h4 {
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.15rem;
+    margin: 0;
 }
 
-.ex-info p {
-    font-size: 0.85rem;
-    color: var(--text-muted);
+.ex-name-input-edit {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 0.4rem 0.75rem;
+    width: 100%;
+}
+
+.ex-metrics-row {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.metric {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.metric strong {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.metric-input-small {
+    width: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xs);
+    color: var(--text-primary);
+    text-align: center;
+    padding: 0.2rem;
+    font-weight: 700;
 }
 
 .ex-inputs {
@@ -185,14 +265,16 @@
 }
 
 .weight-input {
-    width: 70px !important;
+    width: 75px !important;
     border: none !important;
     background: transparent !important;
     text-align: right;
     font-family: inherit;
-    font-size: 1.1rem !important;
-    font-weight: 600;
+    font-size: 1.2rem !important;
+    font-weight: 700;
     color: var(--accent-primary) !important;
+    padding: 0.5rem !important;
+    outline: none;
 }
 
 .weight-input-group .unit {
