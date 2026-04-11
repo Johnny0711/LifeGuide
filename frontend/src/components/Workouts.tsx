@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/apiService';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { Plus, Trash2, ChevronDown, ChevronUp, Edit2, Check, Dumbbell, Activity, TrendingUp } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, Edit2, Check, Dumbbell, Activity, TrendingUp } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
