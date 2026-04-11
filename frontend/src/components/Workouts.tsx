@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../services/apiService';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { Plus, Trash2, ChevronDown, ChevronUp, Edit2, Check, Dumbbell, Activity, TrendingUp } from 'lucide-react';
@@ -320,7 +320,9 @@ const Workouts: React.FC = () => {
                                                     <Trash2 size={18} />
                                                 </Button>
                                             )}
-                                            {expandedDay === split.id ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                                            <div className={`expand-trigger ${expandedDay === split.id ? 'expanded' : ''}`}>
+                                                <ChevronDown size={20} />
+                                            </div>
                                         </div>
                                     </div>
 
