@@ -56,6 +56,76 @@
     margin-bottom: 4rem;
 }
 
+/* Insights Section */
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.insight-card {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    gap: 1.25rem;
+}
+
+.insight-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.insight-icon.score { background: hsla(245, 90%, 68%, 0.15); color: var(--accent-primary); }
+.insight-icon.streak { background: hsla(35, 95%, 55%, 0.15); color: var(--warning); }
+.insight-icon.tasks { background: hsla(155, 80%, 45%, 0.15); color: var(--success); }
+
+.insight-data {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.insight-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.insight-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.insight-value-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.mini-progress {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.mini-progress .fill {
+    height: 100%;
+    background: var(--accent-gradient);
+    border-radius: 3px;
+    transition: width 1s ease-out;
+}
+
+/* Quick Launch Section */
 .section-header {
     margin-bottom: 2rem;
 }
