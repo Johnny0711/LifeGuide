@@ -16,6 +16,7 @@ import {
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
+import { ConfirmModal } from './ui/ConfirmModal';
 import './ShoppingLists.css';
 
 interface ShoppingListItem {
@@ -42,7 +43,7 @@ const ShoppingLists: React.FC = () => {
     const [newListTitle, setNewListTitle] = useState('');
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [isCreatingList, setIsCreatingList] = useState(false);
-    const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
+    
     const [newItemText, setNewItemText] = useState('');
     const [isAddingItem, setIsAddingItem] = useState(false);
     const [inviteUsername, setInviteUsername] = useState('');
@@ -50,6 +51,19 @@ const ShoppingLists: React.FC = () => {
     const [inviteError, setInviteError] = useState('');
     const [inviteSuccess, setInviteSuccess] = useState('');
     const [isSendingInvite, setIsSendingInvite] = useState(false);
+
+    // Modal State
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        confirmAction: () => Promise<void>;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        confirmAction: async () => {}
+    });
 
     useEffect(() => {
         fetchLists();
@@ -82,30 +96,42 @@ const ShoppingLists: React.FC = () => {
         }
     };
 
-    const deleteList = async (id: string) => {
-        setIsDeletingId(id);
-        try {
-            await api.delete(`/shopping-lists/${id}`);
-            setLists(prev => prev.filter(l => l.id !== id));
-            if (selectedList?.id === id) setSelectedList(null);
-        } catch (error) {
-            console.error('Failed to delete list', error);
-        } finally {
-            setIsDeletingId(null);
-        }
+    const requestDeleteList = (id: string) => {
+        setModalConfig({
+            isOpen: true,
+            title: 'Delete List?',
+            message: 'Are you sure you want to delete this shopping list? All items within it will be permanently removed.',
+            confirmAction: async () => {
+                try {
+                    await api.delete(`/shopping-lists/${id}`);
+                    setLists(prev => prev.filter(l => l.id !== id));
+                    if (selectedList?.id === id) setSelectedList(null);
+                } catch (error) {
+                    console.error('Failed to delete list', error);
+                } finally {
+                    setModalConfig(prev => ({ ...prev, isOpen: false }));
+                }
+            }
+        });
     };
 
-    const leaveList = async (id: string) => {
-        setIsDeletingId(id);
-        try {
-            await api.delete(`/shopping-lists/${id}/leave`);
-            setLists(prev => prev.filter(l => l.id !== id));
-            if (selectedList?.id === id) setSelectedList(null);
-        } catch (error) {
-            console.error('Failed to leave list', error);
-        } finally {
-            setIsDeletingId(null);
-        }
+    const requestLeaveList = (id: string) => {
+        setModalConfig({
+            isOpen: true,
+            title: 'Leave Shared List?',
+            message: 'Are you sure you want to leave this shared shopping list? You will no longer be able to see or edit its items.',
+            confirmAction: async () => {
+                try {
+                    await api.delete(`/shopping-lists/${id}/leave`);
+                    setLists(prev => prev.filter(l => l.id !== id));
+                    if (selectedList?.id === id) setSelectedList(null);
+                } catch (error) {
+                    console.error('Failed to leave list', error);
+                } finally {
+                    setModalConfig(prev => ({ ...prev, isOpen: false }));
+                }
+            }
+        });
     };
 
     const openList = (list: ShoppingList) => {
@@ -398,19 +424,17 @@ const ShoppingLists: React.FC = () => {
                                     </div>
                                     {isOwner ? (
                                         <button
-                                            className={`list-card-delete ${isDeletingId === list.id ? 'loading' : ''}`}
-                                            onClick={(e) => { e.stopPropagation(); deleteList(list.id); }}
+                                            className="list-card-delete"
+                                            onClick={(e) => { e.stopPropagation(); requestDeleteList(list.id); }}
                                             title="Delete list"
-                                            disabled={isDeletingId === list.id}
                                         >
                                             <Trash2 size={16} />
                                         </button>
                                     ) : (
                                         <button
-                                            className={`list-card-delete ${isDeletingId === list.id ? 'loading' : ''}`}
-                                            onClick={(e) => { e.stopPropagation(); leaveList(list.id); }}
+                                            className="list-card-delete"
+                                            onClick={(e) => { e.stopPropagation(); requestLeaveList(list.id); }}
                                             title="Leave list"
-                                            disabled={isDeletingId === list.id}
                                         >
                                             <LogOut size={16} />
                                         </button>
@@ -437,6 +461,14 @@ const ShoppingLists: React.FC = () => {
                     })}
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={modalConfig.isOpen}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                onConfirm={modalConfig.confirmAction}
+                onCancel={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 };

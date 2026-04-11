@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/apiService';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Pin } from 'lucide-react';
 import { type IPin } from '../models/PinItem';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
+import { ConfirmModal } from './ui/ConfirmModal';
 import './Pins.css';
 
 const PIN_COLORS = [
@@ -11,13 +12,14 @@ const PIN_COLORS = [
     '#f59e0b', // yellow/orange
     '#ef4444', // red
     '#10b981', // green
-    '#8b5cf6', // purple
-    '#ec4899'  // pink
+    '#6366f1', // indigo
+    '#ec4899', // pink
+    '#94a3b8'  // slate
 ];
 
 const Pins: React.FC = () => {
-    const [pins, setPins] = useState<IPin[]>([]); // Changed type to IPin[]
-    const [isLoading, setIsLoading] = useState(true); // Added loading state
+    const [pins, setPins] = useState<IPin[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [isFormOpen, setIsFormOpen] = useState(false);
 
     const [newTitle, setNewTitle] = useState('');
@@ -26,7 +28,10 @@ const Pins: React.FC = () => {
 
     const [draggedId, setDraggedId] = useState<string | null>(null);
 
-    // Fetch pins on mount
+    // Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [pinToDelete, setPinToDelete] = useState<string | null>(null);
+
     useEffect(() => {
         fetchPins();
     }, []);
@@ -34,7 +39,6 @@ const Pins: React.FC = () => {
     const fetchPins = async () => {
         try {
             const response = await api.get('/pins');
-            // Assuming API returns an array mapping correctly to IPin interface
             setPins(response.data);
         } catch (error) {
             console.error('Failed to fetch pins', error);
@@ -43,11 +47,11 @@ const Pins: React.FC = () => {
         }
     };
 
-    const addPin = async (e: React.FormEvent) => { // Made async
+    const addPin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newTitle.trim() && !newContent.trim()) return;
 
-        const newPinData = { // Changed to plain object for API
+        const newPinData = {
             title: newTitle.trim(),
             content: newContent.trim(),
             color: selectedColor
@@ -55,37 +59,37 @@ const Pins: React.FC = () => {
 
         try {
             const response = await api.post('/pins', newPinData);
-            setPins(prev => [response.data, ...prev]); // Add new pin from API response
+            setPins(prev => [response.data, ...prev]);
             setNewTitle('');
             setNewContent('');
             setSelectedColor(PIN_COLORS[0]);
-            setIsFormOpen(false); // Close form after adding
+            setIsFormOpen(false);
         } catch (error) {
             console.error('Failed to add pin', error);
         }
     };
 
-    const deletePin = async (id: string) => { // Made async
-        try {
-            await api.delete(`/pins/${id}`);
-            setPins(prev => prev.filter(p => p.id !== id)); // Filter out deleted pin
-        } catch (error) {
-            console.error('Failed to delete pin', error);
-        }
+    const requestDelete = (id: string) => {
+        setPinToDelete(id);
+        setIsModalOpen(true);
     };
 
-    // This function now needs to update the order on the backend as well
-    // For simplicity, this example only updates local state. A real app would make an API call.
-    const updatePinOrder = (newPins: IPin[]) => {
-        setPins(newPins);
-        // In a real application, you would make an API call here to save the new order
-        // e.g., api.put('/pins/order', newPins.map(p => p.id));
+    const confirmDelete = async () => {
+        if (!pinToDelete) return;
+        try {
+            await api.delete(`/pins/${pinToDelete}`);
+            setPins(prev => prev.filter(p => p.id !== pinToDelete));
+        } catch (error) {
+            console.error('Failed to delete pin', error);
+        } finally {
+            setIsModalOpen(false);
+            setPinToDelete(null);
+        }
     };
 
     const handleDragStart = (e: React.DragEvent, id: string) => {
         setDraggedId(id);
         e.dataTransfer.effectAllowed = 'move';
-        // Small timeout for visual feedback
         setTimeout(() => {
             const el = document.getElementById(`pin-${id}`);
             if (el) el.classList.add('dragging');
@@ -99,7 +103,7 @@ const Pins: React.FC = () => {
     };
 
     const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault(); // Necessary to allow dropping
+        e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
     };
 
@@ -114,15 +118,15 @@ const Pins: React.FC = () => {
         const [draggedPin] = newPins.splice(draggedIndex, 1);
         newPins.splice(targetIndex, 0, draggedPin);
 
-        updatePinOrder(newPins); // Use the new update function
+        setPins(newPins);
     };
 
     return (
         <div className="pins-container animate-fade-in">
             <header className="pins-header">
                 <div>
-                    <h1>Pin Board</h1>
-                    <p>Important notes and quick thoughts.</p>
+                    <h1><Pin className="header-icon" style={{ rotate: '45deg', display: 'inline', marginRight: '10px', color: 'var(--accent-primary)' }} /> Pin Board</h1>
+                    <p>Collect your important notes and quick thoughts.</p>
                 </div>
                 {!isFormOpen && (
                     <Button variant="primary" onClick={() => setIsFormOpen(true)} leftIcon={<Plus size={20} />}>
@@ -132,7 +136,7 @@ const Pins: React.FC = () => {
             </header>
 
             {isFormOpen && (
-                <Card className="pin-form-card">
+                <Card className="pin-form-card" noPadding={false}>
                     <form className="pin-form" onSubmit={addPin}>
                         <input
                             type="text"
@@ -140,6 +144,7 @@ const Pins: React.FC = () => {
                             value={newTitle}
                             onChange={(e) => setNewTitle(e.target.value)}
                             className="pin-input-title"
+                            autoFocus
                         />
                         <textarea
                             placeholder="What's on your mind?"
@@ -180,7 +185,7 @@ const Pins: React.FC = () => {
             {isLoading ? (
                 <div className="empty-state">Loading Pins...</div>
             ) : pins.length === 0 && !isFormOpen ? (
-                <div className="empty-state">No pins yet. Create one to get started!</div>
+                <div className="empty-state">Your board is empty. Start pinning your thoughts!</div>
             ) : (
                 <div className="masonry-grid">
                     {pins.map(pin => (
@@ -189,10 +194,8 @@ const Pins: React.FC = () => {
                             id={`pin-${pin.id}`}
                             className={`pin-card-oop ${draggedId === pin.id ? 'dragging' : ''}`}
                             style={{
-                                borderTopColor: pin.color,
-                                borderTopWidth: '4px',
-                                backgroundColor: `${pin.color}15`,
-                                cursor: 'grab'
+                                borderTop: `4px solid ${pin.color}`,
+                                ['--pin-color' as any]: pin.color
                             }}
                             interactive
                             draggable
@@ -203,7 +206,7 @@ const Pins: React.FC = () => {
                         >
                             <button
                                 className="pin-delete"
-                                onClick={() => deletePin(pin.id)}
+                                onClick={(e) => { e.stopPropagation(); requestDelete(pin.id); }}
                                 aria-label="Delete pin"
                             >
                                 <Trash2 size={16} />
@@ -218,6 +221,14 @@ const Pins: React.FC = () => {
                     ))}
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={isModalOpen}
+                title="Delete Pin?"
+                message="This note will be permanently removed from your board. This cannot be undone."
+                onConfirm={confirmDelete}
+                onCancel={() => setIsModalOpen(false)}
+            />
         </div>
     );
 };
