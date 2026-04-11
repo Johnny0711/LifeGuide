@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Mail } from 'lucide-react';
+import { Mail, Settings, LogOut, User } from 'lucide-react';
 import api from '../services/apiService';
 import './Navbar.css';
 
@@ -13,7 +13,6 @@ const Navbar: React.FC = () => {
 
     useEffect(() => {
         fetchPendingInvites();
-        // Poll every 30s for new invites
         const interval = setInterval(fetchPendingInvites, 30000);
         return () => clearInterval(interval);
     }, []);
@@ -62,16 +61,30 @@ const Navbar: React.FC = () => {
           </button>
           
           <div className="navbar-profile" onClick={toggleMenu}>
-            <img
-              src={'https://ui-avatars.com/api/?name=' + (user?.name || user?.email) + '&background=6366f1&color=fff'}
-              alt="Profile"
-              className="navbar-avatar"
-            />
+            <div className="avatar-wrapper">
+              <img
+                src={'https://ui-avatars.com/api/?name=' + (user?.name || user?.email) + '&background=6366f1&color=fff'}
+                alt="Profile"
+                className="navbar-avatar"
+              />
+            </div>
+            
             {menuOpen && (
-              <div className="navbar-dropdown glass-panel">
-                <button onClick={handleEditProfile} className="dropdown-item">Settings</button>
+              <div className="navbar-dropdown glass-panel animate-pop-in">
+                <div className="dropdown-header">
+                  <span className="user-name">{user?.name || 'Explorer'}</span>
+                  <span className="user-email">{user?.email}</span>
+                </div>
                 <div className="dropdown-divider"></div>
-                <button onClick={handleLogout} className="dropdown-item logout">Sign Out</button>
+                <button onClick={handleEditProfile} className="dropdown-item">
+                  <Settings size={18} />
+                  Settings
+                </button>
+                <div className="dropdown-divider"></div>
+                <button onClick={handleLogout} className="dropdown-item logout">
+                  <LogOut size={18} />
+                  Sign Out
+                </button>
               </div>
             )}
           </div>

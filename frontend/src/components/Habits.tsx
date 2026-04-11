@@ -4,13 +4,17 @@ import { Plus, Trash2, Flame, CheckCircle, Circle } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
+import { ConfirmModal } from './ui/ConfirmModal';
 import './Habits.css';
 
 const Habits: React.FC = () => {
-    // We expect the API to return objects that satisfy IHabit
     const [habits, setHabits] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [newHabitName, setNewHabitName] = useState('');
+    
+    // Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [habitToDelete, setHabitToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         fetchHabits();
@@ -44,12 +48,21 @@ const Habits: React.FC = () => {
         }
     };
 
-    const deleteHabit = async (id: string) => {
+    const requestDelete = (id: string) => {
+        setHabitToDelete(id);
+        setIsModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!habitToDelete) return;
         try {
-            await api.delete(`/habits/${id}`);
-            setHabits(prev => prev.filter(h => h.id !== id));
+            await api.delete(`/habits/${habitToDelete}`);
+            setHabits(prev => prev.filter(h => h.id !== habitToDelete));
         } catch (error) {
             console.error('Failed to delete habit', error);
+        } finally {
+            setIsModalOpen(false);
+            setHabitToDelete(null);
         }
     };
 
@@ -126,7 +139,7 @@ const Habits: React.FC = () => {
 
                                         <Button
                                             variant="ghost"
-                                            onClick={() => deleteHabit(habit.id)}
+                                            onClick={() => requestDelete(habit.id)}
                                             className="habit-delete-btn"
                                             aria-label="Delete habit"
                                         >
@@ -155,6 +168,14 @@ const Habits: React.FC = () => {
                     })
                 )}
             </div>
+
+            <ConfirmModal
+                isOpen={isModalOpen}
+                title="Delete Habit?"
+                message="Are you sure you want to delete this habit? All history and streaks for this habit will be lost."
+                onConfirm={confirmDelete}
+                onCancel={() => setIsModalOpen(false)}
+            />
         </div>
     );
 };

@@ -5,6 +5,7 @@ import { type ITodo } from '../models/TodoItem';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
+import { ConfirmModal } from './ui/ConfirmModal';
 import './Todos.css';
 
 const Todos: React.FC = () => {
@@ -13,6 +14,10 @@ const Todos: React.FC = () => {
     const [inputValue, setInputValue] = useState('');
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editValue, setEditValue] = useState('');
+    
+    // Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [todoToDelete, setTodoToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         fetchTodos();
@@ -75,12 +80,21 @@ const Todos: React.FC = () => {
         setEditValue(todo.text);
     };
 
-    const deleteTodo = async (id: string) => {
+    const requestDelete = (id: string) => {
+        setTodoToDelete(id);
+        setIsModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!todoToDelete) return;
         try {
-            await api.delete(`/todos/${id}`);
-            setTodos(prev => prev.filter(t => t.id !== id));
+            await api.delete(`/todos/${todoToDelete}`);
+            setTodos(prev => prev.filter(t => t.id !== todoToDelete));
         } catch (error) {
             console.error('Failed to delete todo', error);
+        } finally {
+            setIsModalOpen(false);
+            setTodoToDelete(null);
         }
     };
 
@@ -161,7 +175,7 @@ const Todos: React.FC = () => {
                                         variant="ghost"
                                         size="sm"
                                         className="todo-delete-btn"
-                                        onClick={() => deleteTodo(todo.id)}
+                                        onClick={() => requestDelete(todo.id)}
                                         aria-label="Delete task"
                                     >
                                         <Trash2 size={18} />
@@ -171,6 +185,14 @@ const Todos: React.FC = () => {
                     )}
                 </ul>
             </Card>
+
+            <ConfirmModal
+                isOpen={isModalOpen}
+                title="Delete Task?"
+                message="This action cannot be undone. This task will be permanently removed."
+                onConfirm={confirmDelete}
+                onCancel={() => setIsModalOpen(false)}
+            />
         </div>
     );
 };

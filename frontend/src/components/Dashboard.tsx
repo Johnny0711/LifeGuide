@@ -74,9 +74,16 @@ const Dashboard: React.FC = () => {
 
     return (
         <div className="dashboard-container animate-fade-in">
+            {/* Decorative Background Elements */}
+            <div className="bg-ornament orb-1" />
+            <div className="bg-ornament orb-2" />
+            
             <header className="dashboard-hero">
                 <div className="hero-content">
-                    <span className="hero-badge">LifeGuide Hub</span>
+                    <span className="hero-badge">
+                        <TrendingUp size={14} style={{ marginRight: '6px' }} />
+                        LifeGuide Hub
+                    </span>
                     <h1>{getGreeting()}, <span>{user?.name || 'Explorer'}</span></h1>
                     <p>Your personal ecosystem is ready. Where shall we focus today?</p>
                 </div>
