@@ -12,7 +12,9 @@ export class Input extends React.Component<InputProps> {
         return {
             padding: '0.8rem 1.2rem',
             borderRadius: 'var(--radius-md)',
-            background: 'var(--bg-tertiary)',
+            background: 'var(--glass-bg)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
             border: `1px solid ${hasError ? 'var(--danger)' : 'var(--glass-border)'}`,
             color: 'var(--text-primary)',
             fontSize: '1rem',

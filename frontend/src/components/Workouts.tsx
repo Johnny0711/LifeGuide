@@ -231,8 +231,8 @@ const Workouts: React.FC = () => {
     }
 
     return (
-        <div className="workouts-container animate-fade-in">
-            <header className="workouts-header">
+        <div className="workouts-container">
+            <header className="workouts-header animate-fade-in">
                 <div className="header-main">
                     <h1><Dumbbell className="header-icon" /> Fitness Tracker</h1>
                     <p>Track your weekly routines and overall physical progress.</p>
@@ -254,10 +254,11 @@ const Workouts: React.FC = () => {
                 </div>
             </header>
 
-            {activeTab === 'routines' ? (
-                <div className="routines-view">
-                    <div className="routines-controls">
-                        <Button
+            <div className="view-content-wrapper" key={activeTab}>
+                {activeTab === 'routines' ? (
+                    <div className="routines-view animate-fade-in">
+                        <div className="routines-controls">
+                            <Button
                             variant="primary"
                             onClick={addSplit}
                             leftIcon={<Plus size={18} />}
@@ -521,6 +522,7 @@ const Workouts: React.FC = () => {
                     </div>
                 </div>
             )}
+            </div>
 
             <ConfirmModal
                 isOpen={modalConfig.isOpen}
