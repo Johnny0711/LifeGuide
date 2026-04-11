@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/apiService';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { Plus, Trash2, ChevronDown, ChevronUp, Edit2, Check, Dumbbell, Activity, TrendingUp } from 'lucide-react';
@@ -134,8 +134,13 @@ const Workouts: React.FC = () => {
             message: 'Remove this exercise from your routine?',
             confirmAction: async () => {
                 try {
-                    const response = await api.delete(`/workouts/${workoutId}/exercises/${exerciseId}`);
-                    setSplits(prev => prev.map(s => (s.id === workoutId ? response.data : s)));
+                    await api.delete(`/workouts/${workoutId}/exercises/${exerciseId}`);
+                    setSplits(prev => prev.map(s => {
+                        if (s.id === workoutId) {
+                            return { ...s, exercises: s.exercises.filter((ex: any) => ex.id !== exerciseId) };
+                        }
+                        return s;
+                    }));
                 } catch (error) {
                     console.error('Failed to delete exercise', error);
                 } finally {
@@ -159,27 +164,56 @@ const Workouts: React.FC = () => {
     const addExercise = async (workoutId: string) => {
         try {
             const response = await api.post(`/workouts/${workoutId}/exercises`, { name: 'New Exercise', sets: 3, reps: 10, weight: 0 });
-            setSplits(prev => prev.map(s => (s.id === workoutId ? response.data : s)));
+            setSplits(prev => prev.map(s => {
+                if (s.id === workoutId) {
+                    return { ...s, exercises: [...s.exercises, response.data] };
+                }
+                return s;
+            }));
         } catch (error) {
             console.error('Failed to add exercise', error);
         }
     };
 
-    const updateSplit = async (id: string, updates: any) => {
+    // --- State Update Handlers (Local Only) ---
+    
+    const handleSplitChange = (id: string, updates: any) => {
+        setSplits(prev => prev.map(s => (s.id === id ? { ...s, ...updates } : s)));
+    };
+
+    const handleExerciseChange = (workoutId: string, exerciseId: string, updates: any) => {
+        setSplits(prev => prev.map(s => {
+            if (s.id === workoutId) {
+                return {
+                    ...s,
+                    exercises: s.exercises.map((ex: any) => 
+                        ex.id === exerciseId ? { ...ex, ...updates } : ex
+                    )
+                };
+            }
+            return s;
+        }));
+    };
+
+    // --- Persistence Handlers (API) ---
+
+    const persistSplit = async (id: string, updates: any) => {
         try {
-            const response = await api.put(`/workouts/${id}`, updates);
-            setSplits(prev => prev.map(s => (s.id === id ? response.data : s)));
+            await api.put(`/workouts/${id}`, updates);
+            // No need to setSplits here as we already updated it locally for responsiveness
+            // But we can refresh just to be safe or ignore if we trust local state
         } catch (error) {
-            console.error('Failed to update split', error);
+            console.error('Failed to persist split', error);
+            fetchSplits(); // Revert on failure
         }
     };
 
-    const updateExercise = async (workoutId: string, exerciseId: string, updates: any) => {
+    const persistExercise = async (workoutId: string, exerciseId: string, updates: any) => {
         try {
-            const response = await api.put(`/workouts/${workoutId}/exercises/${exerciseId}`, updates);
-            setSplits(prev => prev.map(s => (s.id === workoutId ? response.data : s)));
+            await api.put(`/workouts/${workoutId}/exercises/${exerciseId}`, updates);
         } catch (error) {
-            console.error('Failed to update exercise', error);
+            console.error('Failed to persist exercise', error);
+            fetchSplits(); // Revert on failure
         }
     };
 
@@ -235,14 +269,14 @@ const Workouts: React.FC = () => {
                             onClick={() => setIsEditMode(!isEditMode)}
                             leftIcon={isEditMode ? <Check size={18} /> : <Edit2 size={18} />}
                         >
-                            {isEditMode ? 'Save & Exit Edit' : 'Edit Routines'}
+                            {isEditMode ? 'Done Editing' : 'Edit Routines'}
                         </Button>
                     </div>
 
                     <div className="splits-list">
                         {isLoading ? (
                             <div className="empty-state">Loading Workout Plans...</div>
-                        ) : splits.length === 0 ? (
+                        ) : (splits || []).length === 0 ? (
                             <div className="empty-state">No workout routines defined. Create your first one to get started!</div>
                         ) : (
                             splits.map(split => (
@@ -250,20 +284,20 @@ const Workouts: React.FC = () => {
                                     <div className="split-header" onClick={() => setExpandedDay(expandedDay === split.id ? null : split.id)}>
                                         <div className="split-title-group">
                                             {isEditMode ? (
-                                                <div className="split-edit-inputs">
+                                                <div className="split-edit-inputs" onClick={(e) => e.stopPropagation()}>
                                                     <input
                                                         type="text"
-                                                        value={split.day}
-                                                        onChange={(e) => updateSplit(split.id, { day: e.target.value })}
-                                                        onClick={(e) => e.stopPropagation()}
+                                                        value={split.day || ''}
+                                                        onChange={(e) => handleSplitChange(split.id, { day: e.target.value })}
+                                                        onBlur={(e) => persistSplit(split.id, { day: e.target.value })}
                                                         className="split-day-input"
                                                         placeholder="Day (e.g. Monday)"
                                                     />
                                                     <input
                                                         type="text"
-                                                        value={split.splitName}
-                                                        onChange={(e) => updateSplit(split.id, { splitName: e.target.value })}
-                                                        onClick={(e) => e.stopPropagation()}
+                                                        value={split.splitName || ''}
+                                                        onChange={(e) => handleSplitChange(split.id, { splitName: e.target.value })}
+                                                        onBlur={(e) => persistSplit(split.id, { splitName: e.target.value })}
                                                         className="split-name-input"
                                                         placeholder="Muscle Group (e.g. Chest)"
                                                     />
@@ -301,8 +335,9 @@ const Workouts: React.FC = () => {
                                                                     <div className="ex-edit-header">
                                                                         <input
                                                                             type="text"
-                                                                            value={ex.name}
-                                                                            onChange={(e) => updateExercise(split.id, ex.id, { name: e.target.value })}
+                                                                            value={ex.name || ''}
+                                                                            onChange={(e) => handleExerciseChange(split.id, ex.id, { name: e.target.value })}
+                                                                            onBlur={(e) => persistExercise(split.id, ex.id, { name: e.target.value })}
                                                                             className="ex-name-input-edit"
                                                                             placeholder="Exercise name"
                                                                         />
@@ -317,8 +352,9 @@ const Workouts: React.FC = () => {
                                                                         {isEditMode ? (
                                                                             <input
                                                                                 type="number"
-                                                                                value={ex.sets}
-                                                                                onChange={(e) => updateExercise(split.id, ex.id, { sets: Number(e.target.value) })}
+                                                                                value={ex.sets ?? ''}
+                                                                                onChange={(e) => handleExerciseChange(split.id, ex.id, { sets: parseInt(e.target.value) || 0 })}
+                                                                                onBlur={(e) => persistExercise(split.id, ex.id, { sets: parseInt(e.target.value) || 0 })}
                                                                                 className="metric-input-small"
                                                                             />
                                                                         ) : (
@@ -330,8 +366,9 @@ const Workouts: React.FC = () => {
                                                                         {isEditMode ? (
                                                                             <input
                                                                                 type="number"
-                                                                                value={ex.reps}
-                                                                                onChange={(e) => updateExercise(split.id, ex.id, { reps: Number(e.target.value) })}
+                                                                                value={ex.reps ?? ''}
+                                                                                onChange={(e) => handleExerciseChange(split.id, ex.id, { reps: parseInt(e.target.value) || 0 })}
+                                                                                onBlur={(e) => persistExercise(split.id, ex.id, { reps: parseInt(e.target.value) || 0 })}
                                                                                 className="metric-input-small"
                                                                             />
                                                                         ) : (
@@ -345,8 +382,9 @@ const Workouts: React.FC = () => {
                                                                 <div className="weight-input-group">
                                                                     <input
                                                                         type="number"
-                                                                        value={ex.weight || ''}
-                                                                        onChange={(e) => updateExercise(split.id, ex.id, { weight: parseFloat(e.target.value) })}
+                                                                        value={ex.weight ?? ''}
+                                                                        onChange={(e) => handleExerciseChange(split.id, ex.id, { weight: parseFloat(e.target.value) || 0 })}
+                                                                        onBlur={(e) => persistExercise(split.id, ex.id, { weight: parseFloat(e.target.value) || 0 })}
                                                                         placeholder="0"
                                                                         className="weight-input"
                                                                     />
