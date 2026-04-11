@@ -42,38 +42,43 @@ const Navbar: React.FC = () => {
         navigate('/profile');
     };
 
-    return (
-        <nav className="navbar">
-            <div className="navbar-left" onClick={() => navigate('/')}>
-                <h1 className="navbar-logo">LifeGuide</h1>
-            </div>
-            <div className="navbar-right">
-                <button
-                    className="messages-btn"
-                    onClick={() => navigate('/messages')}
-                    title="Messages"
-                >
-                    <Mail size={20} />
-                    {pendingCount > 0 && (
-                        <span className="messages-badge">{pendingCount}</span>
-                    )}
-                </button>
-                <div className="profile-container" onClick={toggleMenu}>
-                    <img
-                        src={'https://ui-avatars.com/api/?name=' + (user?.name || user?.email) + '&background=random'}
-                        alt="Profile"
-                        className="profile-pic"
-                    />
-                    {menuOpen && (
-                        <div className="profile-dropdown">
-                            <button onClick={handleEditProfile} className="dropdown-item">Edit Profile</button>
-                            <button onClick={handleLogout} className="dropdown-item">Log out</button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </nav>
-    );
+  return (
+    <nav className="navbar glass-panel">
+      <div className="navbar-container">
+        <div className="navbar-left" onClick={() => navigate('/')}>
+          <h1 className="navbar-logo">Life<span>Guide</span></h1>
+        </div>
+        
+        <div className="navbar-right">
+          <button
+            className="navbar-icon-btn hide-mobile"
+            onClick={() => navigate('/messages')}
+            title="Messages"
+          >
+            <Mail size={22} />
+            {pendingCount > 0 && (
+              <span className="navbar-badge">{pendingCount}</span>
+            )}
+          </button>
+          
+          <div className="navbar-profile" onClick={toggleMenu}>
+            <img
+              src={'https://ui-avatars.com/api/?name=' + (user?.name || user?.email) + '&background=6366f1&color=fff'}
+              alt="Profile"
+              className="navbar-avatar"
+            />
+            {menuOpen && (
+              <div className="navbar-dropdown glass-panel">
+                <button onClick={handleEditProfile} className="dropdown-item">Settings</button>
+                <div className="dropdown-divider"></div>
+                <button onClick={handleLogout} className="dropdown-item logout">Sign Out</button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
 };
 
 export default Navbar;

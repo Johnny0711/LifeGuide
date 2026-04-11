@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
+import BottomNav from './components/BottomNav';
 import Todos from './components/Todos';
 import Pins from './components/Pins';
 import Workouts from './components/Workouts';
@@ -11,15 +12,14 @@ import ShoppingLists from './components/ShoppingLists';
 import Messages from './components/Messages';
 import Auth from './components/Auth'; // Custom auth view
 
-console.log("Frontend Version mit neuem API-Routing geladen!");
-
 function App() {
   const { token, isLoading } = useAuth();
 
   if (isLoading) {
     return (
       <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center', background: 'var(--bg-primary)' }}>
-        <h2 style={{ color: 'var(--text-primary)' }}>Lade LifeGuide...</h2>
+        <div className="loader"></div>
+        <h2 style={{ color: 'var(--text-primary)', marginLeft: '1rem' }}>LifeGuide is waking up...</h2>
       </div>
     );
   }
@@ -43,6 +43,7 @@ function App() {
           <Route path="/profile" element={<ProfileEdit />} />
         </Routes>
       </main>
+      <BottomNav />
     </div>
   );
 }

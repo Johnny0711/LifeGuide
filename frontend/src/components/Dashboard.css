@@ -1,78 +1,150 @@
 .dashboard-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding-top: 2rem;
 }
 
-.dashboard-header {
-    text-align: center;
+.dashboard-hero {
+    padding: 3rem 0;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .dashboard-hero {
+        padding: 1.5rem 0;
+        text-align: center;
+    }
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--accent-glow);
+    color: var(--accent-primary);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-hero h1 {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    margin-bottom: 1rem;
+}
+
+.dashboard-hero h1 span {
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dashboard-hero p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 600px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-hero p {
+        margin: 0 auto;
+    }
+}
+
+.dashboard-section {
     margin-bottom: 4rem;
 }
 
-.dashboard-header h1 {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.section-header {
+    margin-bottom: 2rem;
 }
 
-.dashboard-header p {
-    color: var(--text-secondary);
-    font-size: 1.2rem;
+.section-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.section-header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
 }
 
 .app-launcher-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    padding: 0 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+}
+
+@media (max-width: 480px) {
+    .app-launcher-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .launcher-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    padding: 2.5rem 1.5rem;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
-    transition: all 0.3s ease;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    position: relative;
+    overflow: hidden;
     text-decoration: none;
     color: var(--text-primary);
 }
 
-.launcher-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-    border-color: rgba(255, 255, 255, 0.15);
-}
-
-.launcher-icon-container {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
+.launcher-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.5rem;
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-normal);
 }
 
-.launcher-card:hover .launcher-icon-container {
+.launcher-icon.task { background: hsla(245, 90%, 68%, 0.15); color: var(--accent-primary); }
+.launcher-icon.habit { background: hsla(35, 95%, 55%, 0.15); color: var(--warning); }
+.launcher-icon.fitness { background: hsla(155, 80%, 45%, 0.15); color: var(--success); }
+.launcher-icon.pin { background: hsla(0, 85%, 60%, 0.15); color: var(--danger); }
+.launcher-icon.store { background: hsla(265, 85%, 65%, 0.15); color: var(--accent-secondary); }
+.launcher-icon.mail { background: hsla(200, 90%, 55%, 0.15); color: var(--info); }
+
+.launcher-info {
+    flex: 1;
+}
+
+.launcher-info h3 {
+    font-size: 1.15rem;
+    margin-bottom: 2px;
+}
+
+.launcher-info p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.launcher-arrow {
+    color: var(--text-muted);
+    opacity: 0.5;
+    transition: all var(--transition-normal);
+}
+
+.launcher-card:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-4px);
+}
+
+.launcher-card:hover .launcher-icon {
     transform: scale(1.1);
 }
 
-.launcher-card h2 {
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
-    color: var(--text-primary);
+.launcher-card:hover .launcher-arrow {
+    opacity: 1;
+    color: var(--accent-primary);
+    transform: translateX(4px);
 }
 
-.launcher-card p {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.4;
+.interactive:active {
+    transform: scale(0.98);
 }
