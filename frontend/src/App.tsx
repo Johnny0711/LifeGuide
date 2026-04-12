@@ -10,7 +10,9 @@ import Habits from './components/Habits';
 import ProfileEdit from './components/ProfileEdit';
 import ShoppingLists from './components/ShoppingLists';
 import Messages from './components/Messages';
-import Auth from './components/Auth'; // Custom auth view
+import Auth from './components/Auth';
+import SetupAccount from './components/SetupAccount';
+import AdminDashboard from './components/AdminDashboard';
 
 function App() {
   const { token, isLoading } = useAuth();
@@ -28,6 +30,12 @@ function App() {
     return <Auth />;
   }
 
+  const { user } = useAuth();
+
+  if (user?.needsSetup) {
+    return <SetupAccount />;
+  }
+
   return (
     <div className="app-container">
       <Navbar />
@@ -41,6 +49,7 @@ function App() {
           <Route path="/shopping-lists" element={<ShoppingLists />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/profile" element={<ProfileEdit />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </main>
       <BottomNav />

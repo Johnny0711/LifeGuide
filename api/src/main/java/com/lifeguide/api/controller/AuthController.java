@@ -29,18 +29,6 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        User user = userService.registerUser(
-            request.getEmail(), 
-            passwordEncoder.encode(request.getPassword()), 
-            request.getName()
-        );
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-        String jwtToken = jwtService.generateToken(userDetails);
-        return ResponseEntity.ok(new AuthResponse(jwtToken));
-    }
-
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         authenticationManager.authenticate(
@@ -49,6 +37,15 @@ public class AuthController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String jwtToken = jwtService.generateToken(userDetails);
         return ResponseEntity.ok(new AuthResponse(jwtToken));
+    }
+
+    @PostMapping("/setup-account")
+    public ResponseEntity<Void> setupAccount(@RequestBody SetupRequest request, java.security.Principal principal) {
+        if (!request.getPassword().equals(request.getPasswordConfirm())) {
+            throw new RuntimeException("Passwords do not match");
+        }
+        userService.setupAccount(principal.getName(), request.getUsername(), request.getPassword());
+        return ResponseEntity.ok().build();
     }
     
     // DTOs
@@ -62,17 +59,17 @@ public class AuthController {
         public void setPassword(String password) { this.password = password; }
     }
 
-    public static class RegisterRequest {
-        private String email;
+    public static class SetupRequest {
+        private String username;
         private String password;
-        private String name;
+        private String passwordConfirm;
         
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
+        public String getUsername() { return username; }
+        public void setUsername(String username) { this.username = username; }
         public String getPassword() { return password; }
         public void setPassword(String password) { this.password = password; }
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
+        public String getPasswordConfirm() { return passwordConfirm; }
+        public void setPasswordConfirm(String passwordConfirm) { this.passwordConfirm = passwordConfirm; }
     }
 
     public static class AuthResponse {

@@ -4,7 +4,9 @@ import api, { setAuthToken } from '../services/apiService';
 interface User {
   id: string;
   email: string;
-  name: string;
+  username: string;
+  role: string;
+  needsSetup: boolean;
 }
 
 interface AuthContextType {

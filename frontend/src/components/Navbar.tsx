@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Settings, LogOut } from 'lucide-react';
+import { Mail, Settings, LogOut, Shield } from 'lucide-react';
 import api from '../services/apiService';
 import './Navbar.css';
 
@@ -41,6 +41,11 @@ const Navbar: React.FC = () => {
         navigate('/profile');
     };
 
+    const handleAdmin = () => {
+        setMenuOpen(false);
+        navigate('/admin');
+    };
+
   return (
     <nav className="navbar glass-panel">
       <div className="navbar-container">
@@ -63,7 +68,7 @@ const Navbar: React.FC = () => {
           <div className="navbar-profile" onClick={toggleMenu}>
             <div className="avatar-wrapper">
               <img
-                src={'https://ui-avatars.com/api/?name=' + (user?.name || user?.email) + '&background=6366f1&color=fff'}
+                src={'https://ui-avatars.com/api/?name=' + (user?.username || user?.email) + '&background=6366f1&color=fff'}
                 alt="Profile"
                 className="navbar-avatar"
               />
@@ -72,10 +77,19 @@ const Navbar: React.FC = () => {
             {menuOpen && (
               <div className="navbar-dropdown glass-panel animate-pop-in">
                 <div className="dropdown-header">
-                  <span className="user-name">{user?.name || 'Explorer'}</span>
+                  <span className="user-name">{user?.username || 'Explorer'}</span>
                   <span className="user-email">{user?.email}</span>
                 </div>
                 <div className="dropdown-divider"></div>
+                {user?.role === 'ADMIN' && (
+                  <>
+                    <button onClick={handleAdmin} className="dropdown-item">
+                      <Shield size={18} />
+                      Admin
+                    </button>
+                    <div className="dropdown-divider"></div>
+                  </>
+                )}
                 <button onClick={handleEditProfile} className="dropdown-item">
                   <Settings size={18} />
                   Settings

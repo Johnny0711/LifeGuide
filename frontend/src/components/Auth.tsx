@@ -4,10 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
 const Auth: React.FC = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [error, setError] = useState('');
 
   const { login } = useAuth();
@@ -17,10 +15,7 @@ const Auth: React.FC = () => {
     setError('');
 
     try {
-      const endpoint = isLogin ? '/auth/login' : '/auth/register';
-      const payload = isLogin ? { email, password } : { email, password, name };
-      
-      const response = await api.post(endpoint, payload);
+      const response = await api.post('/auth/login', { email, password });
       
       const token = response.data.token;
       if (token) {
@@ -29,7 +24,7 @@ const Auth: React.FC = () => {
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.message || 'Ein Fehler ist aufgetreten');
+      setError(err.response?.data?.message || 'Login fehlgeschlagen');
     }
   };
 
@@ -37,22 +32,11 @@ const Auth: React.FC = () => {
     <div className="auth-container">
       <div className="auth-card">
         <h1 className="auth-logo">LifeGuide</h1>
-        <h2 className="auth-title">{isLogin ? 'Login' : 'Registrieren'}</h2>
+        <h2 className="auth-title">Login</h2>
         
         {error && <div className="auth-error">{error}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          {!isLogin && (
-            <div className="form-group">
-              <label>Name</label>
-              <input 
-                 type="text" 
-                 value={name} 
-                 onChange={(e) => setName(e.target.value)} 
-                 required 
-              />
-            </div>
-          )}
           <div className="form-group">
             <label>E-Mail</label>
             <input 
@@ -73,20 +57,9 @@ const Auth: React.FC = () => {
           </div>
           
           <button type="submit" className="auth-button">
-            {isLogin ? 'Anmelden' : 'Account erstellen'}
+            Anmelden
           </button>
         </form>
-
-        <p className="auth-switch">
-          {isLogin ? 'Noch keinen Account?' : 'Bereits registriert?'}
-          <button 
-             type="button" 
-             className="auth-switch-btn" 
-             onClick={() => setIsLogin(!isLogin)}
-          >
-            {isLogin ? 'Hier registrieren' : 'Hier einloggen'}
-          </button>
-        </p>
       </div>
     </div>
   );

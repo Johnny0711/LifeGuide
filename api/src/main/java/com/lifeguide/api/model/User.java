@@ -11,6 +11,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private java.util.UUID id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
+    @Column(name = "needs_setup", nullable = false)
+    private boolean needsSetup = false;
+
     @Column(nullable = false)
     private String password;
     
@@ -101,5 +108,21 @@ public class User {
 
     public void setCurrentWeightKg(Double currentWeightKg) {
         this.currentWeightKg = currentWeightKg;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public boolean isNeedsSetup() {
+        return needsSetup;
+    }
+
+    public void setNeedsSetup(boolean needsSetup) {
+        this.needsSetup = needsSetup;
     }
 }
