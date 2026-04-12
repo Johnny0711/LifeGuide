@@ -20,7 +20,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() == 0) {
+        // 1. Ensure Admin Account exists
+        if (userRepository.findByEmail("admin@lifeguide.com").isEmpty()) {
             User admin = new User();
             admin.setEmail("admin@lifeguide.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
@@ -28,7 +29,19 @@ public class DataInitializer implements CommandLineRunner {
             admin.setNeedsSetup(false);
             admin.setUsername("admin");
             userRepository.save(admin);
-            System.out.println("Default admin account created: admin@lifeguide.com / admin123");
+            System.out.println("Default admin account created/restored: admin@lifeguide.com / admin123");
         }
+
+        // 2. Migration: Ensure all users have roles (safety for existing DB records)
+        userRepository.findAll().forEach(user -> {
+            boolean updated = false;
+            if (user.getRole() == null) {
+                user.setRole(Role.USER);
+                updated = true;
+            }
+            if (updated) {
+                userRepository.save(user);
+            }
+        });
     }
 }
