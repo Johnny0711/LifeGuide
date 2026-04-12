@@ -33,15 +33,24 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // 2. Migration: Ensure all users have roles (safety for existing DB records)
-        userRepository.findAll().forEach(user -> {
-            boolean updated = false;
-            if (user.getRole() == null) {
-                user.setRole(Role.USER);
-                updated = true;
-            }
-            if (updated) {
-                userRepository.save(user);
-            }
-        });
+        try {
+            userRepository.findAll().forEach(user -> {
+                boolean updated = false;
+                if (user.getRole() == null) {
+                    user.setRole(Role.USER);
+                    updated = true;
+                }
+                if (user.getNeedsSetup() == null) {
+                    user.setNeedsSetup(false);
+                    updated = true;
+                }
+                if (updated) {
+                    userRepository.save(user);
+                    System.out.println("Migrated user roles/setup for: " + user.getEmail());
+                }
+            });
+        } catch (Exception e) {
+            System.err.println("Migration failed, but proceeding to allow startup: " + e.getMessage());
+        }
     }
 }

@@ -16,7 +16,7 @@ public class User {
     private Role role = Role.USER;
 
     @Column(name = "needs_setup", nullable = false)
-    private boolean needsSetup = false;
+    private Boolean needsSetup = false;
 
     @Column(nullable = false)
     private String password;
@@ -118,11 +118,11 @@ public class User {
         this.role = role;
     }
 
-    public boolean isNeedsSetup() {
+    public Boolean getNeedsSetup() {
         return needsSetup;
     }
 
-    public void setNeedsSetup(boolean needsSetup) {
+    public void setNeedsSetup(Boolean needsSetup) {
         this.needsSetup = needsSetup;
     }
 }
