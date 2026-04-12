@@ -1,7 +1,7 @@
 package com.lifeguide.api.config;
 
-import com.lifeguide.api.model.Role;
 import com.lifeguide.api.model.User;
+import com.lifeguide.api.model.Role;
 import com.lifeguide.api.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,38 +19,15 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        // 1. Ensure Admin Account exists
-        if (userRepository.findByEmail("admin@lifeguide.com").isEmpty()) {
+    public void run(String... args) {
+        if (userRepository.count() == 0) {
             User admin = new User();
-            admin.setEmail("admin@lifeguide.com");
-            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setEmail("admin@lifeguide.tech");
+            admin.setPassword(passwordEncoder.encode("admin123")); // Default password
             admin.setRole(Role.ADMIN);
-            admin.setNeedsSetup(false);
-            admin.setUsername("admin");
+            admin.setNeedsSetup(true); // Forces password change on first login
             userRepository.save(admin);
-            System.out.println("Default admin account created/restored: admin@lifeguide.com / admin123");
-        }
-
-        // 2. Migration: Ensure all users have roles (safety for existing DB records)
-        try {
-            userRepository.findAll().forEach(user -> {
-                boolean updated = false;
-                if (user.getRole() == null) {
-                    user.setRole(Role.USER);
-                    updated = true;
-                }
-                if (user.getNeedsSetup() == null) {
-                    user.setNeedsSetup(false);
-                    updated = true;
-                }
-                if (updated) {
-                    userRepository.save(user);
-                    System.out.println("Migrated user roles/setup for: " + user.getEmail());
-                }
-            });
-        } catch (Exception e) {
-            System.err.println("Migration failed, but proceeding to allow startup: " + e.getMessage());
+            System.out.println("Default admin account created: admin@lifeguide.tech / admin123");
         }
     }
 }

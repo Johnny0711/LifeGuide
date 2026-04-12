@@ -9,6 +9,11 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-java_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: java_app_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-java_user} -d java_app_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     # ports:
     #   - "5432:5432" # Auskommentiert für mehr Sicherheit, der Container ist intern trotzdem erreichbar
     volumes:
@@ -23,12 +28,14 @@ services:
     container_name: lifeguide_api
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://lifeguide_db:5432/java_app_db
       - POSTGRES_USER=${POSTGRES_USER:-java_user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
 
     # ports:
     #   - "8080:8080"
