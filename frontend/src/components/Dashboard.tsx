@@ -85,7 +85,7 @@ const Dashboard: React.FC = () => {
                         <TrendingUp size={14} style={{ marginRight: '6px' }} />
                         LifeGuide Hub
                     </span>
-                    <h1>{getGreeting()}, <span>{user?.name || 'Explorer'}</span></h1>
+                    <h1>{getGreeting()}, <span>{user?.username || 'Explorer'}</span></h1>
                     <p>Your personal ecosystem is ready. Where shall we focus today?</p>
                 </div>
             </header>

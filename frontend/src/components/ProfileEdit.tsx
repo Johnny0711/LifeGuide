@@ -70,7 +70,7 @@ const Profile: React.FC = () => {
             <header className="profile-header">
                 <img src={'https://via.placeholder.com/100'} alt="Profile" className="profile-large-pic" />
                 <div className="profile-info-readonly">
-                    <h2>{user?.name}</h2>
+                    <h2>{user?.username}</h2>
                     <p>{user?.email}</p>
                 </div>
             </header>
