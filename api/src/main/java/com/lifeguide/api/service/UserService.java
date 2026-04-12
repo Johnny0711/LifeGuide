@@ -68,7 +68,7 @@ public class UserService {
     @Transactional
     public void setupAccount(String email, String username, String newPassword) {
         User user = getUserByEmail(email);
-        if (!user.isNeedsSetup()) {
+        if (!user.getNeedsSetup()) {
             throw new RuntimeException("Account already setup");
         }
         
