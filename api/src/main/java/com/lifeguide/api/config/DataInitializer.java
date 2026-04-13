@@ -20,7 +20,6 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     @Override
-    @Transactional
     public void run(String... args) {
         try {
             // Ensure admin user exists
