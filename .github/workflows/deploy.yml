@@ -20,5 +20,6 @@ jobs:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
         run: |
+          docker builder prune -f
           docker compose -f docker-compose.yml down
           docker compose -f docker-compose.yml up -d --build
