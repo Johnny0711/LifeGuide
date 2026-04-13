@@ -24,7 +24,11 @@ const Auth: React.FC = () => {
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.message || 'Login fehlgeschlagen');
+      if (err.response?.status === 401) {
+        setError('Ungültige E-Mail oder Passwort. Tipp: Standard-Admin ist admin / admin123');
+      } else {
+        setError(err.response?.data?.message || 'Login fehlgeschlagen. Bitte versuche es später erneut.');
+      }
     }
   };
 
