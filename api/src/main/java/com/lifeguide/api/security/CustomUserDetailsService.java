@@ -19,9 +19,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+        User user = userRepository.findByEmailOrUsername(identifier, identifier)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + identifier));
                 
         com.lifeguide.api.model.Role role = user.getRole() != null ? user.getRole() : com.lifeguide.api.model.Role.USER;
         

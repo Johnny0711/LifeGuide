@@ -9,8 +9,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -30,14 +33,25 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-        String jwtToken = jwtService.generateToken(userDetails);
-        return ResponseEntity.ok(new AuthResponse(jwtToken));
+    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+        logger.info("Login attempt for email: {}", request.getEmail());
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+            String jwtToken = jwtService.generateToken(userDetails);
+            return ResponseEntity.ok(new AuthResponse(jwtToken));
+        } catch (AuthenticationException e) {
+            logger.error("Authentication failed for {}: {}", request.getEmail(), e.getMessage());
+            return ResponseEntity.status(401).body(new ErrorResponse("Ungültige E-Mail oder Passwort"));
+        } catch (Exception e) {
+            logger.error("Unexpected error during login: ", e);
+            return ResponseEntity.status(500).body(new ErrorResponse("Ein unerwarteter Fehler ist aufgetreten"));
+        }
     }
 
     @PostMapping("/setup-account")
@@ -81,5 +95,12 @@ public class AuthController {
         
         public String getToken() { return token; }
         public void setToken(String token) { this.token = token; }
+    }
+
+    public static class ErrorResponse {
+        private String message;
+        public ErrorResponse(String message) { this.message = message; }
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
     }
 }
