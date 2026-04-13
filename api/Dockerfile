@@ -14,7 +14,7 @@ WORKDIR /app
 EXPOSE 8080
 
 # Copy the generated JAR file from the build stage
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/app.jar app.jar
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
