@@ -20,18 +20,25 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.count() == 0) {
-            User admin = new User();
-            admin.setEmail("admin@lifeguide.tech");
-            admin.setUsername("admin"); // Default username for easier login
-            admin.setPassword(passwordEncoder.encode("admin123")); // Default password
-            admin.setRole(Role.ADMIN);
-            admin.setNeedsSetup(true); // Forces password change on first login
-            userRepository.save(admin);
-            System.out.println("Default admin account created:");
-            System.out.println("Email: admin@lifeguide.tech");
-            System.out.println("Username: admin");
-            System.out.println("Password: admin123");
-        }
+        // Ensure admin user exists
+        userRepository.findByEmail("admin@lifeguide.tech").ifPresentOrElse(
+            admin -> {
+                if (admin.getUsername() == null || !admin.getUsername().equals("admin")) {
+                    admin.setUsername("admin");
+                    userRepository.save(admin);
+                    System.out.println("Admin account updated with default username 'admin'");
+                }
+            },
+            () -> {
+                User admin = new User();
+                admin.setEmail("admin@lifeguide.tech");
+                admin.setUsername("admin");
+                admin.setPassword(passwordEncoder.encode("admin123"));
+                admin.setRole(Role.ADMIN);
+                admin.setNeedsSetup(true);
+                userRepository.save(admin);
+                System.out.println("Default admin account created: admin@lifeguide.tech / admin123");
+            }
+        );
     }
 }

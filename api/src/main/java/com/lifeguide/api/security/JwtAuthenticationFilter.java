@@ -35,12 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         System.out.println("Processing request: " + request.getMethod() + " " + path);
 
-        if (path.contains("/api/auth")) {
-            System.out.println("Skipping JWT filter for auth path: " + path);
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
