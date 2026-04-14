@@ -614,11 +614,19 @@ input[type=number] {
 .log-input-row {
     display: flex;
     gap: 0.75rem;
-    align-items: center;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
 }
 
 .log-input-row > *:first-child {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
+    width: 0;
+}
+
+.log-input-row > *:last-child {
+    flex-shrink: 0;
 }
 
 /* BMI tag badge */
