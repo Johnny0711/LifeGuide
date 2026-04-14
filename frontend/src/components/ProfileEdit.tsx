@@ -68,7 +68,11 @@ const Profile: React.FC = () => {
     return (
         <div className="profile-container animate-fade-in">
             <header className="profile-header">
-                <img src={'https://via.placeholder.com/100'} alt="Profile" className="profile-large-pic" />
+                <img
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username || user?.email || 'U')}&background=6366f1&color=fff&size=100`}
+                    alt="Profile"
+                    className="profile-large-pic"
+                />
                 <div className="profile-info-readonly">
                     <h2>{user?.username}</h2>
                     <p>{user?.email}</p>
