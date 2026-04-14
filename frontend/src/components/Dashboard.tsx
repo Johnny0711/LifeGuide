@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  CheckCircle2, 
-  Flame, 
-  Dumbbell, 
-  Pin, 
-  ShoppingBag, 
-  MessageSquare,
-  ArrowRight,
-  Target,
-  TrendingUp,
-  Award
+import {
+    CheckCircle2,
+    Flame,
+    Dumbbell,
+    Pin,
+    ShoppingBag,
+    MessageSquare,
+    ArrowRight,
+    Target,
+    TrendingUp,
+    Award
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/apiService';
@@ -24,7 +24,7 @@ const Dashboard: React.FC = () => {
         pendingTasks: 0,
         isLoading: true
     });
-    
+
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
@@ -39,13 +39,13 @@ const Dashboard: React.FC = () => {
 
                 // Calculate Habit Score
                 const totalHabits = habits.length;
-                const completedToday = habits.filter((h: any) => 
+                const completedToday = habits.filter((h: any) =>
                     h.completedDates && h.completedDates.includes(todayStr)
                 ).length;
                 const habitScore = totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0;
 
                 // Max Streak
-                const maxStreak = habits.reduce((max: number, h: any) => 
+                const maxStreak = habits.reduce((max: number, h: any) =>
                     Math.max(max, h.currentStreak || 0), 0);
 
                 // Pending Tasks
@@ -78,14 +78,14 @@ const Dashboard: React.FC = () => {
             {/* Decorative Background Elements */}
             <div className="bg-ornament orb-1" />
             <div className="bg-ornament orb-2" />
-            
+
             <header className="dashboard-hero">
                 <div className="hero-content">
                     <span className="hero-badge">
                         <TrendingUp size={14} style={{ marginRight: '6px' }} />
                         LifeGuide Hub
                     </span>
-                    <h1>{getGreeting()}, <span>{user?.username || 'Explorer'}</span></h1>
+                    <h1>{getGreeting()}, <span>{user?.username || 'Looser'}</span></h1>
                     <p>Your personal ecosystem is ready. Where shall we focus today?</p>
                 </div>
             </header>
@@ -95,7 +95,7 @@ const Dashboard: React.FC = () => {
                     <h2>Daily Insights</h2>
                     <p>Your progress at a glance</p>
                 </div>
-                
+
                 <div className="insights-grid">
                     <div className="insight-card glass-panel">
                         <div className="insight-icon score">
@@ -137,7 +137,7 @@ const Dashboard: React.FC = () => {
                     <h2>Quick Launch</h2>
                     <p>Access your primary modules</p>
                 </div>
-                
+
                 <div className="app-launcher-grid">
                     <Link to="/todos" className="launcher-card glass-panel interactive">
                         <div className="launcher-icon task">

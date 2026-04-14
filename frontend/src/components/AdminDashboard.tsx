@@ -33,7 +33,7 @@ const AdminDashboard: React.FC = () => {
             setIsLoading(false);
         } catch (err) {
             console.error(err);
-            setError('Fehler beim Laden der Benutzer.');
+            setError('An error occurred while loading users.');
             setIsLoading(false);
         }
     };
@@ -47,30 +47,30 @@ const AdminDashboard: React.FC = () => {
             fetchUsers();
             setNewEmail('');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Benutzer konnte nicht erstellt werden.');
+            setError(err.response?.data?.message || 'User couldn\'t be created.');
         }
     };
 
     const handleDeleteUser = async (id: string) => {
-        if (!window.confirm('Möchtest du diesen Benutzer wirklich löschen?')) return;
+        if (!window.confirm('Are you sure you want to delete the user?')) return;
         try {
             await api.delete(`/admin/users/${id}`);
             fetchUsers();
         } catch (err) {
-            setError('Löschen fehlgeschlagen.');
+            setError('Deletion failed.');
         }
     };
 
     if (currentUser?.role !== 'ADMIN') {
-        return <div className="admin-error">Zugriff verweigert. Nur für Admins.</div>;
+        return <div className="admin-error">Acces denied. Only for Admins!</div>;
     }
 
     return (
         <div className="admin-dashboard">
             <header className="admin-header">
-                <h1>Benutzerverwaltung</h1>
+                <h1>Usermanagement</h1>
                 <button className="add-btn" onClick={() => { setShowAddModal(true); setGeneratedPassword(null); }}>
-                    + Neuer Benutzer
+                    + New user
                 </button>
             </header>
 
@@ -88,28 +88,28 @@ const AdminDashboard: React.FC = () => {
                                     <th>E-Mail</th>
                                     <th>Rolle</th>
                                     <th>Status</th>
-                                    <th>Aktionen</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {users.map(u => (
                                     <tr key={u.id}>
-                                        <td>{u.username || <span className="setup-pending">Ausstehend</span>}</td>
+                                        <td>{u.username || <span className="setup-pending">Pending</span>}</td>
                                         <td>{u.email}</td>
                                         <td><span className={`role-badge ${u.role.toLowerCase()}`}>{u.role}</span></td>
                                         <td>
-                                            {u.needsSetup ? 
-                                                <span className="status-badge waiting">Setup nötig</span> : 
-                                                <span className="status-badge active">Aktiv</span>
+                                            {u.needsSetup ?
+                                                <span className="status-badge waiting">Setup needed</span> :
+                                                <span className="status-badge active">Active</span>
                                             }
                                         </td>
                                         <td>
-                                            <button 
-                                                className="delete-btn" 
+                                            <button
+                                                className="delete-btn"
                                                 onClick={() => handleDeleteUser(u.id)}
                                                 disabled={u.email === currentUser.email}
                                             >
-                                                Löschen
+                                                Delete
                                             </button>
                                         </td>
                                     </tr>
@@ -123,37 +123,37 @@ const AdminDashboard: React.FC = () => {
             {showAddModal && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <h2>Benutzer hinzufügen</h2>
+                        <h2>Add user</h2>
                         {!generatedPassword ? (
                             <form onSubmit={handleAddUser}>
                                 <div className="form-group">
                                     <label>E-Mail</label>
-                                    <input 
-                                        type="email" 
-                                        value={newEmail} 
-                                        onChange={(e) => setNewEmail(e.target.value)} 
-                                        required 
+                                    <input
+                                        type="email"
+                                        value={newEmail}
+                                        onChange={(e) => setNewEmail(e.target.value)}
+                                        required
                                         placeholder="user@example.com"
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Rolle</label>
+                                    <label>Role</label>
                                     <select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
                                         <option value="USER">User</option>
                                         <option value="ADMIN">Admin</option>
                                     </select>
                                 </div>
                                 <div className="modal-actions">
-                                    <button type="button" className="cancel-btn" onClick={() => setShowAddModal(false)}>Abbrechen</button>
-                                    <button type="submit" className="confirm-btn">Erstellen</button>
+                                    <button type="button" className="cancel-btn" onClick={() => setShowAddModal(false)}>Cancel</button>
+                                    <button type="submit" className="confirm-btn">Create</button>
                                 </div>
                             </form>
                         ) : (
                             <div className="password-display">
-                                <p>Benutzer erfolgreich erstellt! Kopiere dieses temporäre Passwort:</p>
+                                <p>User created successfully! Copy this temporary password:</p>
                                 <div className="temp-password">{generatedPassword}</div>
-                                <p className="warning">Dieses Passwort wird nur einmal angezeigt!</p>
-                                <button className="confirm-btn" onClick={() => setShowAddModal(false)}>Schließen</button>
+                                <p className="warning">This password will only be displayed once!</p>
+                                <button className="confirm-btn" onClick={() => setShowAddModal(false)}>Close</button>
                             </div>
                         )}
                     </div>

@@ -16,7 +16,7 @@ const Auth: React.FC = () => {
 
     try {
       const response = await api.post('/auth/login', { email, password });
-      
+
       const token = response.data.token;
       if (token) {
         setAuthToken(token);
@@ -25,9 +25,9 @@ const Auth: React.FC = () => {
     } catch (err: any) {
       console.error(err);
       if (err.response?.status === 401) {
-        setError('Ungültige E-Mail oder Passwort. Tipp: Standard-Admin ist admin / admin123');
+        setError('Wrong Email or Password.');
       } else {
-        setError(err.response?.data?.message || 'Login fehlgeschlagen. Bitte versuche es später erneut.');
+        setError(err.response?.data?.message || 'Login failed. Please try it again later.');
       }
     }
   };
@@ -37,31 +37,31 @@ const Auth: React.FC = () => {
       <div className="auth-card">
         <h1 className="auth-logo">LifeGuide</h1>
         <h2 className="auth-title">Login</h2>
-        
+
         {error && <div className="auth-error">{error}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>E-Mail oder Benutzername</label>
-            <input 
-               type="text" 
-               value={email} 
-               onChange={(e) => setEmail(e.target.value)} 
-               required 
+            <label>E-Mail or Username</label>
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div className="form-group">
-            <label>Passwort</label>
-            <input 
-               type="password" 
-               value={password} 
-               onChange={(e) => setPassword(e.target.value)} 
-               required 
+            <label>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
-          
+
           <button type="submit" className="auth-button">
-            Anmelden
+            Login
           </button>
         </form>
       </div>
