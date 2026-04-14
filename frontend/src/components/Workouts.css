@@ -533,6 +533,12 @@ input[type=number] {
 }
 
 /* Progress View */
+.progress-view {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
 .progress-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -547,6 +553,136 @@ input[type=number] {
         margin-bottom: 2rem;
     }
 }
+
+/* Card header used in both stats-card and chart-card */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .card-header h3 {
+        font-size: 1.1rem;
+    }
+}
+
+/* No profile data yet */
+.insufficient-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--glass-border);
+    margin-bottom: 1.25rem;
+}
+
+/* Quick log weight form */
+.log-weight-form {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--glass-border);
+}
+
+.log-weight-form h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.log-input-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.log-input-row > *:first-child {
+    flex: 1;
+}
+
+/* BMI tag badge */
+.bmi-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.bmi-tag.underweight { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.bmi-tag.normal      { background: rgba(34, 197, 94, 0.2);  color: #4ade80; }
+.bmi-tag.overweight  { background: rgba(234, 179, 8, 0.2);  color: #facc15; }
+.bmi-tag.obese       { background: rgba(239, 68, 68, 0.2);  color: #f87171; }
+
+/* Entry history section */
+.history-section {
+    margin-top: 0.5rem;
+}
+
+.history-section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+}
+
+@media (min-width: 768px) {
+    .history-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1.25rem;
+    }
+}
+
+/* History item info layout */
+.history-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.history-info .date {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.history-info .weight {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.delete-log {
+    color: var(--danger) !important;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.delete-log:hover {
+    opacity: 1;
+}
+
 
 .stats-card .stats-layout {
     display: grid;

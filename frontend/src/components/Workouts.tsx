@@ -36,7 +36,7 @@ const Workouts: React.FC = () => {
         isOpen: false,
         title: '',
         message: '',
-        confirmAction: async () => {}
+        confirmAction: async () => { }
     });
 
     useEffect(() => {
