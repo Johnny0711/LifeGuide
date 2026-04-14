@@ -332,7 +332,53 @@ input[type=number] {
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-md);
     gap: 0.75rem;
+    transition: opacity 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    cursor: default;
 }
+
+/* Drag handle */
+.drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: grab;
+    padding: 0 0.15rem;
+    flex-shrink: 0;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    align-self: center;
+}
+
+.drag-handle:hover {
+    opacity: 1;
+    color: var(--accent-primary);
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Card is draggable in edit mode — show grab cursor */
+.exercise-item-oop[draggable="true"] {
+    cursor: grab;
+}
+
+/* Being dragged */
+.exercise-item-oop.ex-dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
+    box-shadow: 0 0 0 2px var(--accent-primary);
+}
+
+/* Drop target */
+.exercise-item-oop.ex-drag-over {
+    border-color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.08);
+    box-shadow: 0 0 12px var(--accent-glow);
+    transform: scale(1.01);
+}
+
 
 @media (min-width: 600px) {
     .exercise-item-oop {

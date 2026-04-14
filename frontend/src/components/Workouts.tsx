@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../services/apiService';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { Plus, Trash2, ChevronDown, Edit2, Check, Dumbbell, Activity, TrendingUp } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, Edit2, Check, Dumbbell, Activity, TrendingUp, GripVertical } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
@@ -20,7 +20,12 @@ const Workouts: React.FC = () => {
 
     const [expandedDay, setExpandedDay] = useState<string | null>(null);
     const [isEditMode, setIsEditMode] = useState<boolean>(false);
-    
+
+    // Drag & Drop state
+    const dragExercise = useRef<{ workoutId: string; exerciseId: string } | null>(null);
+    const [draggingId, setDraggingId] = useState<string | null>(null);
+    const [dragOverId, setDragOverId] = useState<string | null>(null);
+
     // Modal State
     const [modalConfig, setModalConfig] = useState<{
         isOpen: boolean;
@@ -176,7 +181,7 @@ const Workouts: React.FC = () => {
     };
 
     // --- State Update Handlers (Local Only) ---
-    
+
     const handleSplitChange = (id: string, updates: any) => {
         setSplits(prev => prev.map(s => (s.id === id ? { ...s, ...updates } : s)));
     };
@@ -186,7 +191,7 @@ const Workouts: React.FC = () => {
             if (s.id === workoutId) {
                 return {
                     ...s,
-                    exercises: s.exercises.map((ex: any) => 
+                    exercises: s.exercises.map((ex: any) =>
                         ex.id === exerciseId ? { ...ex, ...updates } : ex
                     )
                 };
@@ -200,11 +205,9 @@ const Workouts: React.FC = () => {
     const persistSplit = async (id: string, updates: any) => {
         try {
             await api.put(`/workouts/${id}`, updates);
-            // No need to setSplits here as we already updated it locally for responsiveness
-            // But we can refresh just to be safe or ignore if we trust local state
         } catch (error) {
             console.error('Failed to persist split', error);
-            fetchSplits(); // Revert on failure
+            fetchSplits();
         }
     };
 
@@ -213,8 +216,52 @@ const Workouts: React.FC = () => {
             await api.put(`/workouts/${workoutId}/exercises/${exerciseId}`, updates);
         } catch (error) {
             console.error('Failed to persist exercise', error);
-            fetchSplits(); // Revert on failure
+            fetchSplits();
         }
+    };
+
+    // --- Drag & Drop Handlers ---
+
+    const handleDragStart = (workoutId: string, exerciseId: string) => {
+        dragExercise.current = { workoutId, exerciseId };
+        setDraggingId(exerciseId);
+    };
+
+    const handleDragEnter = (workoutId: string, exerciseId: string) => {
+        setDragOverId(exerciseId);
+
+        if (!dragExercise.current || dragExercise.current.workoutId !== workoutId) return;
+        if (dragExercise.current.exerciseId === exerciseId) return;
+
+        const fromId = dragExercise.current.exerciseId;
+        setSplits(prev => prev.map(s => {
+            if (s.id !== workoutId) return s;
+            const exercises = [...s.exercises];
+            const fromIdx = exercises.findIndex((e: any) => e.id === fromId);
+            const toIdx = exercises.findIndex((e: any) => e.id === exerciseId);
+            if (fromIdx === -1 || toIdx === -1) return s;
+            const [moved] = exercises.splice(fromIdx, 1);
+            exercises.splice(toIdx, 0, moved);
+            return { ...s, exercises };
+        }));
+        // Keep tracking the dragged item by its original ID
+        dragExercise.current = { workoutId, exerciseId: fromId };
+    };
+
+    const handleDragEnd = async (workoutId: string) => {
+        setDraggingId(null);
+        setDragOverId(null);
+
+        const split = splits.find(s => s.id === workoutId);
+        if (!split) return;
+        const orderedIds = split.exercises.map((e: any) => e.id);
+        try {
+            await api.patch(`/workouts/${workoutId}/exercises/reorder`, orderedIds);
+        } catch (error) {
+            console.error('Failed to persist exercise order', error);
+            fetchSplits();
+        }
+        dragExercise.current = null;
     };
 
     let currentBmi = null;
@@ -259,269 +306,282 @@ const Workouts: React.FC = () => {
                     <div className="routines-view animate-fade-in">
                         <div className="routines-controls">
                             <Button
-                            variant="primary"
-                            onClick={addSplit}
-                            leftIcon={<Plus size={18} />}
-                        >
-                            New Routine
-                        </Button>
-                        <Button
-                            variant={isEditMode ? "primary" : "secondary"}
-                            onClick={() => setIsEditMode(!isEditMode)}
-                            leftIcon={isEditMode ? <Check size={18} /> : <Edit2 size={18} />}
-                        >
-                            {isEditMode ? 'Done Editing' : 'Edit Routines'}
-                        </Button>
-                    </div>
+                                variant="primary"
+                                onClick={addSplit}
+                                leftIcon={<Plus size={18} />}
+                            >
+                                New Routine
+                            </Button>
+                            <Button
+                                variant={isEditMode ? "primary" : "secondary"}
+                                onClick={() => setIsEditMode(!isEditMode)}
+                                leftIcon={isEditMode ? <Check size={18} /> : <Edit2 size={18} />}
+                            >
+                                {isEditMode ? 'Done Editing' : 'Edit Routines'}
+                            </Button>
+                        </div>
 
-                    <div className="splits-list">
-                        {isLoading ? (
-                            <div className="empty-state">Loading Workout Plans...</div>
-                        ) : (splits || []).length === 0 ? (
-                            <div className="empty-state">No workout routines defined. Create your first one to get started!</div>
-                        ) : (
-                            splits.map(split => (
-                                <Card key={split.id} className={`split-card-oop ${expandedDay === split.id ? 'expanded' : ''}`} noPadding>
-                                    <div className="split-header" onClick={() => setExpandedDay(expandedDay === split.id ? null : split.id)}>
-                                        <div className="split-title-group">
-                                            {isEditMode ? (
-                                                <div className="split-edit-inputs" onClick={(e) => e.stopPropagation()}>
-                                                    <input
-                                                        type="text"
-                                                        value={split.day || ''}
-                                                        onChange={(e) => handleSplitChange(split.id, { day: e.target.value })}
-                                                        onBlur={(e) => persistSplit(split.id, { day: e.target.value })}
-                                                        className="split-day-input"
-                                                        placeholder="Day (e.g. Monday)"
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        value={split.splitName || ''}
-                                                        onChange={(e) => handleSplitChange(split.id, { splitName: e.target.value })}
-                                                        onBlur={(e) => persistSplit(split.id, { splitName: e.target.value })}
-                                                        className="split-name-input"
-                                                        placeholder="Muscle Group (e.g. Chest)"
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <h3>{split.day}</h3>
-                                                    <span className="split-subtitle">{split.splitName}</span>
-                                                </>
-                                            )}
-                                        </div>
-                                        <div className="split-meta">
-                                            {isEditMode && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="delete-split-btn"
-                                                    onClick={(e) => { e.stopPropagation(); requestDeleteSplit(split.id); }}
-                                                >
-                                                    <Trash2 size={18} />
-                                                </Button>
-                                            )}
-                                            <div className={`expand-trigger ${expandedDay === split.id ? 'expanded' : ''}`}>
-                                                <ChevronDown size={20} />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {expandedDay === split.id && (
-                                        <div className="split-content animate-fade-in">
-                                            <div className="exercises-list">
-                                                {split.exercises && split.exercises.length > 0 ? (
-                                                    split.exercises.map((ex: any) => (
-                                                        <Card key={ex.id} className="exercise-item-oop">
-                                                            <div className="ex-info">
-                                                                {isEditMode ? (
-                                                                    <div className="ex-edit-header">
-                                                                        <input
-                                                                            type="text"
-                                                                            value={ex.name || ''}
-                                                                            onChange={(e) => handleExerciseChange(split.id, ex.id, { name: e.target.value })}
-                                                                            onBlur={(e) => persistExercise(split.id, ex.id, { name: e.target.value })}
-                                                                            className="ex-name-input-edit"
-                                                                            placeholder="Exercise name"
-                                                                        />
-                                                                    </div>
-                                                                ) : (
-                                                                    <h4>{ex.name}</h4>
-                                                                )}
-                                                                
-                                                                <div className="ex-metrics-row">
-                                                                    <div className="metric">
-                                                                        <span>Sets:</span>
-                                                                        {isEditMode ? (
-                                                                            <input
-                                                                                type="number"
-                                                                                value={ex.sets ?? ''}
-                                                                                onChange={(e) => handleExerciseChange(split.id, ex.id, { sets: parseInt(e.target.value) || 0 })}
-                                                                                onBlur={(e) => persistExercise(split.id, ex.id, { sets: parseInt(e.target.value) || 0 })}
-                                                                                className="metric-input-small"
-                                                                            />
-                                                                        ) : (
-                                                                            <strong>{ex.sets}</strong>
-                                                                        )}
-                                                                    </div>
-                                                                    <div className="metric">
-                                                                        <span>Reps:</span>
-                                                                        {isEditMode ? (
-                                                                            <input
-                                                                                type="number"
-                                                                                value={ex.reps ?? ''}
-                                                                                onChange={(e) => handleExerciseChange(split.id, ex.id, { reps: parseInt(e.target.value) || 0 })}
-                                                                                onBlur={(e) => persistExercise(split.id, ex.id, { reps: parseInt(e.target.value) || 0 })}
-                                                                                className="metric-input-small"
-                                                                            />
-                                                                        ) : (
-                                                                            <strong>{ex.reps}</strong>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="ex-inputs">
-                                                                <div className="weight-input-group">
-                                                                    <input
-                                                                        type="number"
-                                                                        value={ex.weight ?? ''}
-                                                                        onChange={(e) => handleExerciseChange(split.id, ex.id, { weight: parseFloat(e.target.value) || 0 })}
-                                                                        onBlur={(e) => persistExercise(split.id, ex.id, { weight: parseFloat(e.target.value) || 0 })}
-                                                                        placeholder="0"
-                                                                        className="weight-input"
-                                                                    />
-                                                                    <span className="unit">kg</span>
-                                                                </div>
-
-                                                                {isEditMode && (
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className="delete-ex-btn"
-                                                                        onClick={() => requestDeleteExercise(split.id, ex.id)}
-                                                                    >
-                                                                        <Trash2 size={16} />
-                                                                    </Button>
-                                                                )}
-                                                            </div>
-                                                        </Card>
-                                                    ))
+                        <div className="splits-list">
+                            {isLoading ? (
+                                <div className="empty-state">Loading Workout Plans...</div>
+                            ) : (splits || []).length === 0 ? (
+                                <div className="empty-state">No workout routines defined. Create your first one to get started!</div>
+                            ) : (
+                                splits.map(split => (
+                                    <Card key={split.id} className={`split-card-oop ${expandedDay === split.id ? 'expanded' : ''}`} noPadding>
+                                        <div className="split-header" onClick={() => setExpandedDay(expandedDay === split.id ? null : split.id)}>
+                                            <div className="split-title-group">
+                                                {isEditMode ? (
+                                                    <div className="split-edit-inputs" onClick={(e) => e.stopPropagation()}>
+                                                        <input
+                                                            type="text"
+                                                            value={split.day || ''}
+                                                            onChange={(e) => handleSplitChange(split.id, { day: e.target.value })}
+                                                            onBlur={(e) => persistSplit(split.id, { day: e.target.value })}
+                                                            className="split-day-input"
+                                                            placeholder="Day (e.g. Monday)"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={split.splitName || ''}
+                                                            onChange={(e) => handleSplitChange(split.id, { splitName: e.target.value })}
+                                                            onBlur={(e) => persistSplit(split.id, { splitName: e.target.value })}
+                                                            className="split-name-input"
+                                                            placeholder="Muscle Group (e.g. Chest)"
+                                                        />
+                                                    </div>
                                                 ) : (
-                                                    <p className="no-exercises">No exercises added yet.</p>
+                                                    <>
+                                                        <h3>{split.day}</h3>
+                                                        <span className="split-subtitle">{split.splitName}</span>
+                                                    </>
                                                 )}
                                             </div>
-                                            {isEditMode && (
-                                                <Button
-                                                    variant="ghost"
-                                                    onClick={() => addExercise(split.id)}
-                                                    leftIcon={<Plus size={18} />}
-                                                    className="add-exercise-btn"
-                                                    fullWidth
-                                                >
-                                                    Add Exercise
-                                                </Button>
-                                            )}
+                                            <div className="split-meta">
+                                                {isEditMode && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="delete-split-btn"
+                                                        onClick={(e) => { e.stopPropagation(); requestDeleteSplit(split.id); }}
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </Button>
+                                                )}
+                                                <div className={`expand-trigger ${expandedDay === split.id ? 'expanded' : ''}`}>
+                                                    <ChevronDown size={20} />
+                                                </div>
+                                            </div>
                                         </div>
-                                    )}
-                                </Card>
-                            ))
-                        )}
-                    </div>
-                </div>
-            ) : (
-                <div className="progress-view animate-fade-in">
-                    <div className="progress-grid">
-                        <Card className="stats-card">
-                            <div className="card-header">
-                                <h3><Activity size={20} /> Current Stats</h3>
-                            </div>
-                            
-                            {profileData && profileData.heightCm ? (
-                                <div className="stats-layout">
-                                    <div className="stat-item">
-                                        <span className="stat-label">Height</span>
-                                        <span className="stat-value">{profileData.heightCm} cm</span>
-                                    </div>
-                                    <div className="stat-item">
-                                        <span className="stat-label">Weight</span>
-                                        <span className="stat-value">{profileData.currentWeightKg || '-'} kg</span>
-                                    </div>
-                                    {currentBmi && (
-                                        <div className="stat-item highlight">
-                                            <span className="stat-label">BMI</span>
-                                            <span className="stat-value">{currentBmi}</span>
-                                            <span className={`bmi-tag ${bmiCategory.toLowerCase()}`}>{bmiCategory}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="insufficient-data">
-                                    <p>Update your profile with height and weight to see metrics.</p>
-                                </div>
-                            )}
 
-                            <div className="log-weight-form">
-                                <h4>Quick Log</h4>
-                                <div className="log-input-row">
-                                    <Input
-                                        type="number"
-                                        placeholder="Weight (kg)"
-                                        value={newWeight}
-                                        onChange={(e) => setNewWeight(e.target.value)}
-                                    />
-                                    <Button onClick={handleLogWeight} variant="primary">Log</Button>
-                                </div>
-                            </div>
-                        </Card>
+                                        {expandedDay === split.id && (
+                                            <div className="split-content animate-fade-in">
+                                                <div className="exercises-list">
+                                                    {split.exercises && split.exercises.length > 0 ? (
+                                                        split.exercises.map((ex: any) => (
+                                                            <Card
+                                                                key={ex.id}
+                                                                className={`exercise-item-oop${draggingId === ex.id ? ' ex-dragging' : ''}${dragOverId === ex.id && draggingId !== ex.id ? ' ex-drag-over' : ''}`}
+                                                                draggable={isEditMode}
+                                                                onDragStart={isEditMode ? () => handleDragStart(split.id, ex.id) : undefined}
+                                                                onDragEnter={isEditMode ? () => handleDragEnter(split.id, ex.id) : undefined}
+                                                                onDragOver={isEditMode ? (e: React.DragEvent) => e.preventDefault() : undefined}
+                                                                onDragEnd={isEditMode ? () => handleDragEnd(split.id) : undefined}
+                                                            >
+                                                                {isEditMode && (
+                                                                    <div className="drag-handle" title="Drag to reorder">
+                                                                        <GripVertical size={18} />
+                                                                    </div>
+                                                                )}
+                                                                <div className="ex-info">
+                                                                    {isEditMode ? (
+                                                                        <div className="ex-edit-header">
+                                                                            <input
+                                                                                type="text"
+                                                                                value={ex.name || ''}
+                                                                                onChange={(e) => handleExerciseChange(split.id, ex.id, { name: e.target.value })}
+                                                                                onBlur={(e) => persistExercise(split.id, ex.id, { name: e.target.value })}
+                                                                                className="ex-name-input-edit"
+                                                                                placeholder="Exercise name"
+                                                                            />
+                                                                        </div>
+                                                                    ) : (
+                                                                        <h4>{ex.name}</h4>
+                                                                    )}
 
-                        <Card className="chart-card">
-                            <div className="card-header">
-                                <h3><TrendingUp size={20} /> Weight Trend</h3>
-                            </div>
-                            <div className="chart-container" style={{ height: '300px', width: '100%' }}>
-                                {fitnessLogs.length > 0 ? (
-                                    <ResponsiveContainer>
-                                        <LineChart data={fitnessLogs}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                            <XAxis dataKey="date" stroke="var(--text-muted)" fontSize={12} tickMargin={10} />
-                                            <YAxis stroke="var(--text-muted)" fontSize={12} tickMargin={10} domain={['dataMin - 5', 'dataMax + 5']} />
-                                            <RechartsTooltip
-                                                contentStyle={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--glass-border)', color: 'white' }}
-                                                itemStyle={{ color: 'var(--accent-primary)' }}
-                                            />
-                                            <Line type="monotone" dataKey="weight" stroke="var(--accent-primary)" strokeWidth={3} dot={{ fill: 'var(--accent-primary)', r: 4 }} activeDot={{ r: 8 }} />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                ) : (
-                                    <div className="empty-chart">No data points yet.</div>
-                                )}
-                            </div>
-                        </Card>
-                    </div>
+                                                                    <div className="ex-metrics-row">
+                                                                        <div className="metric">
+                                                                            <span>Sets:</span>
+                                                                            {isEditMode ? (
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={ex.sets ?? ''}
+                                                                                    onChange={(e) => handleExerciseChange(split.id, ex.id, { sets: parseInt(e.target.value) || 0 })}
+                                                                                    onBlur={(e) => persistExercise(split.id, ex.id, { sets: parseInt(e.target.value) || 0 })}
+                                                                                    className="metric-input-small"
+                                                                                />
+                                                                            ) : (
+                                                                                <strong>{ex.sets}</strong>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="metric">
+                                                                            <span>Reps:</span>
+                                                                            {isEditMode ? (
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={ex.reps ?? ''}
+                                                                                    onChange={(e) => handleExerciseChange(split.id, ex.id, { reps: parseInt(e.target.value) || 0 })}
+                                                                                    onBlur={(e) => persistExercise(split.id, ex.id, { reps: parseInt(e.target.value) || 0 })}
+                                                                                    className="metric-input-small"
+                                                                                />
+                                                                            ) : (
+                                                                                <strong>{ex.reps}</strong>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
 
-                    <div className="history-section">
-                        <h3>Entry History</h3>
-                        <div className="history-list">
-                            {fitnessLogs.length === 0 ? (
-                                <div className="empty-state">No history recorded.</div>
-                            ) : (
-                                [...fitnessLogs].reverse().map(log => (
-                                    <Card key={log.id} className="history-item">
-                                        <div className="history-info">
-                                            <span className="date">{log.date}</span>
-                                            <span className="weight">{log.weight} kg</span>
-                                        </div>
-                                        <Button variant="ghost" size="sm" onClick={() => requestDeleteLog(log.id)} className="delete-log">
-                                            <Trash2 size={16} />
-                                        </Button>
+                                                                <div className="ex-inputs">
+                                                                    <div className="weight-input-group">
+                                                                        <input
+                                                                            type="number"
+                                                                            value={ex.weight ?? ''}
+                                                                            onChange={(e) => handleExerciseChange(split.id, ex.id, { weight: parseFloat(e.target.value) || 0 })}
+                                                                            onBlur={(e) => persistExercise(split.id, ex.id, { weight: parseFloat(e.target.value) || 0 })}
+                                                                            placeholder="0"
+                                                                            className="weight-input"
+                                                                        />
+                                                                        <span className="unit">kg</span>
+                                                                    </div>
+
+                                                                    {isEditMode && (
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            className="delete-ex-btn"
+                                                                            onClick={() => requestDeleteExercise(split.id, ex.id)}
+                                                                        >
+                                                                            <Trash2 size={16} />
+                                                                        </Button>
+                                                                    )}
+                                                                </div>
+                                                            </Card>
+                                                        ))
+                                                    ) : (
+                                                        <p className="no-exercises">No exercises added yet.</p>
+                                                    )}
+                                                </div>
+                                                {isEditMode && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        onClick={() => addExercise(split.id)}
+                                                        leftIcon={<Plus size={18} />}
+                                                        className="add-exercise-btn"
+                                                        fullWidth
+                                                    >
+                                                        Add Exercise
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        )}
                                     </Card>
                                 ))
                             )}
                         </div>
                     </div>
-                </div>
-            )}
+                ) : (
+                    <div className="progress-view animate-fade-in">
+                        <div className="progress-grid">
+                            <Card className="stats-card">
+                                <div className="card-header">
+                                    <h3><Activity size={20} /> Current Stats</h3>
+                                </div>
+
+                                {profileData && profileData.heightCm ? (
+                                    <div className="stats-layout">
+                                        <div className="stat-item">
+                                            <span className="stat-label">Height</span>
+                                            <span className="stat-value">{profileData.heightCm} cm</span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-label">Weight</span>
+                                            <span className="stat-value">{profileData.currentWeightKg || '-'} kg</span>
+                                        </div>
+                                        {currentBmi && (
+                                            <div className="stat-item highlight">
+                                                <span className="stat-label">BMI</span>
+                                                <span className="stat-value">{currentBmi}</span>
+                                                <span className={`bmi-tag ${bmiCategory.toLowerCase()}`}>{bmiCategory}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="insufficient-data">
+                                        <p>Update your profile with height and weight to see metrics.</p>
+                                    </div>
+                                )}
+
+                                <div className="log-weight-form">
+                                    <h4>Quick Log</h4>
+                                    <div className="log-input-row">
+                                        <Input
+                                            type="number"
+                                            placeholder="Weight (kg)"
+                                            value={newWeight}
+                                            onChange={(e) => setNewWeight(e.target.value)}
+                                        />
+                                        <Button onClick={handleLogWeight} variant="primary">Log</Button>
+                                    </div>
+                                </div>
+                            </Card>
+
+                            <Card className="chart-card">
+                                <div className="card-header">
+                                    <h3><TrendingUp size={20} /> Weight Trend</h3>
+                                </div>
+                                <div className="chart-container" style={{ height: '300px', width: '100%' }}>
+                                    {fitnessLogs.length > 0 ? (
+                                        <ResponsiveContainer>
+                                            <LineChart data={fitnessLogs}>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                                                <XAxis dataKey="date" stroke="var(--text-muted)" fontSize={12} tickMargin={10} />
+                                                <YAxis stroke="var(--text-muted)" fontSize={12} tickMargin={10} domain={['dataMin - 5', 'dataMax + 5']} />
+                                                <RechartsTooltip
+                                                    contentStyle={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--glass-border)', color: 'white' }}
+                                                    itemStyle={{ color: 'var(--accent-primary)' }}
+                                                />
+                                                <Line type="monotone" dataKey="weight" stroke="var(--accent-primary)" strokeWidth={3} dot={{ fill: 'var(--accent-primary)', r: 4 }} activeDot={{ r: 8 }} />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    ) : (
+                                        <div className="empty-chart">No data points yet.</div>
+                                    )}
+                                </div>
+                            </Card>
+                        </div>
+
+                        <div className="history-section">
+                            <h3>Entry History</h3>
+                            <div className="history-list">
+                                {fitnessLogs.length === 0 ? (
+                                    <div className="empty-state">No history recorded.</div>
+                                ) : (
+                                    [...fitnessLogs].reverse().map(log => (
+                                        <Card key={log.id} className="history-item">
+                                            <div className="history-info">
+                                                <span className="date">{log.date}</span>
+                                                <span className="weight">{log.weight} kg</span>
+                                            </div>
+                                            <Button variant="ghost" size="sm" onClick={() => requestDeleteLog(log.id)} className="delete-log">
+                                                <Trash2 size={16} />
+                                            </Button>
+                                        </Card>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <ConfirmModal

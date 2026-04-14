@@ -7,6 +7,7 @@ import com.lifeguide.api.repository.ExerciseRepository;
 import com.lifeguide.api.repository.WorkoutSplitRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +54,9 @@ public class WorkoutService {
 
     public Exercise addExercise(String email, UUID splitId, Exercise exercise) {
         WorkoutSplit split = getOwnedSplit(email, splitId);
+        // Assign sortOrder = current count so new exercises go to the end
+        int nextOrder = split.getExercises().size();
+        exercise.setSortOrder(nextOrder);
         exercise.setWorkoutSplit(split);
         return exerciseRepository.save(exercise);
     }
@@ -73,6 +77,19 @@ public class WorkoutService {
     public void deleteExercise(String email, UUID splitId, UUID exerciseId) {
         getOwnedSplit(email, splitId); // Validation
         exerciseRepository.deleteById(exerciseId);
+    }
+
+    public void reorderExercises(String email, UUID splitId, List<UUID> orderedIds) {
+        getOwnedSplit(email, splitId); // Validation
+        List<Exercise> toSave = new ArrayList<>();
+        for (int i = 0; i < orderedIds.size(); i++) {
+            UUID exId = orderedIds.get(i);
+            Exercise exercise = exerciseRepository.findById(exId)
+                    .orElseThrow(() -> new RuntimeException("Exercise not found: " + exId));
+            exercise.setSortOrder(i);
+            toSave.add(exercise);
+        }
+        exerciseRepository.saveAll(toSave);
     }
 
     private WorkoutSplit getOwnedSplit(String email, UUID splitId) {

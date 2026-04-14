@@ -3,8 +3,8 @@ package com.lifeguide.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,7 +22,8 @@ public class WorkoutSplit {
     private String splitName;
 
     @OneToMany(mappedBy = "workoutSplit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<Exercise> exercises = new HashSet<>();
+    @OrderBy("sortOrder ASC")
+    private List<Exercise> exercises = new ArrayList<>();
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -41,8 +42,8 @@ public class WorkoutSplit {
     public void setDay(String day) { this.day = day; }
     public String getSplitName() { return splitName; }
     public void setSplitName(String splitName) { this.splitName = splitName; }
-    public Set<Exercise> getExercises() { return exercises; }
-    public void setExercises(Set<Exercise> exercises) { this.exercises = exercises; }
+    public List<Exercise> getExercises() { return exercises; }
+    public void setExercises(List<Exercise> exercises) { this.exercises = exercises; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public User getUser() { return user; }

@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS exercises (
     sets INTEGER NOT NULL,
     reps INTEGER NOT NULL,
     weight DOUBLE PRECISION NOT NULL,
+    sort_order INTEGER NOT NULL DEFAULT 0,
     workout_split_id UUID NOT NULL,
     CONSTRAINT fk_exercise_workout_split FOREIGN KEY (workout_split_id) REFERENCES workout_splits (id)
 );

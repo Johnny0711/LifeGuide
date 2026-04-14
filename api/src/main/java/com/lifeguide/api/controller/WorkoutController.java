@@ -59,4 +59,13 @@ public class WorkoutController {
         workoutService.deleteExercise(userDetails.getUsername(), splitId, exerciseId);
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/{splitId}/exercises/reorder")
+    public ResponseEntity<Void> reorderExercises(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable UUID splitId,
+            @RequestBody List<UUID> orderedIds) {
+        workoutService.reorderExercises(userDetails.getUsername(), splitId, orderedIds);
+        return ResponseEntity.ok().build();
+    }
 }
