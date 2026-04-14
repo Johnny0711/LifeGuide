@@ -72,24 +72,34 @@ Track habits, manage tasks, plan workouts, share shopping lists, and more — al
 
 ---
 
-## 🏗 Architecture
+## 🏗️ Architecture
 
+Our services are isolated within a dedicated Docker network (`homeserver-net`) to ensure secure, internal-only communication between the backend and database.
+
+```mermaid
+flowchart LR
+    subgraph Network [Docker Network: homeserver-net]
+        direction LR
+        
+        Frontend[fa:fa-server <b>lifeguide_frontend</b><br/>Nginx :80]
+        API[fa:fa-cogs <b>lifeguide_api</b><br/>Spring Boot :8080]
+        DB[(fa:fa-database <b>lifeguide_db</b><br/>PostgreSQL :5432)]
+
+        Frontend ===>|HTTP| API
+        API ===>|JDBC| DB
+    end
+
+    style Frontend fill:#009639,stroke:#005c23,stroke-width:2px,color:#fff
+    style API fill:#6db33f,stroke:#4a7a2b,stroke-width:2px,color:#fff
+    style DB fill:#336791,stroke:#234764,stroke-width:2px,color:#fff
 ```
-┌─────────────────────────────────────────────────────────┐
-│                      homeserver-net                      │
-│                                                         │
-│  ┌─────────────────┐    ┌──────────────────────────┐   │
-│  │   lifeguide_     │    │    lifeguide_api          │   │
-│  │   frontend       │───▶│    Spring Boot :8080      │   │
-│  │   Nginx :80      │    └──────────┬───────────────┘   │
-│  └─────────────────┘               │ JDBC              │
-│                                    ▼                    │
-│                         ┌──────────────────────────┐   │
-│                         │    lifeguide_db            │   │
-│                         │    PostgreSQL :5432        │   │
-│                         └──────────────────────────┘   │
-└─────────────────────────────────────────────────────────┘
-```
+
+### Component Breakdown
+
+* **`homeserver-net`**: The isolated private network encapsulating the services.
+* **`lifeguide_frontend`**: The web server running **Nginx** on port `80`. It serves static assets and acts as a reverse proxy, forwarding requests to the backend API.
+* **`lifeguide_api`**: The backend application running **Spring Boot** on port `8080`. It handles the core business logic.
+* **`lifeguide_db`**: The database running **PostgreSQL** on port `5432`. It persists application data and communicates securely with the API via JDBC.
 
 ## 📄 License
 
