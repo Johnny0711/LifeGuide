@@ -6,45 +6,45 @@ import api from '../services/apiService';
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [pendingCount, setPendingCount] = useState(0);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
 
-    useEffect(() => {
-        fetchPendingInvites();
-        const interval = setInterval(fetchPendingInvites, 30000);
-        return () => clearInterval(interval);
-    }, []);
+  useEffect(() => {
+    fetchPendingInvites();
+    const interval = setInterval(fetchPendingInvites, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
-    const fetchPendingInvites = async () => {
-        try {
-            const response = await api.get('/shopping-lists/invites');
-            const pending = response.data.filter((i: any) => i.status === 'PENDING');
-            setPendingCount(pending.length);
-        } catch {
-            // silently ignore
-        }
-    };
+  const fetchPendingInvites = async () => {
+    try {
+      const response = await api.get('/shopping-lists/invites');
+      const pending = response.data.filter((i: any) => i.status === 'PENDING');
+      setPendingCount(pending.length);
+    } catch {
+      // silently ignore
+    }
+  };
 
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
-    };
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
-    const handleEditProfile = () => {
-        setMenuOpen(false);
-        navigate('/profile');
-    };
+  const handleEditProfile = () => {
+    setMenuOpen(false);
+    navigate('/profile');
+  };
 
-    const handleAdmin = () => {
-        setMenuOpen(false);
-        navigate('/admin');
-    };
+  const handleAdmin = () => {
+    setMenuOpen(false);
+    navigate('/admin');
+  };
 
   return (
     <nav className="navbar glass-panel">
@@ -52,7 +52,7 @@ const Navbar: React.FC = () => {
         <div className="navbar-left" onClick={() => navigate('/')}>
           <h1 className="navbar-logo">Life<span>Guide</span></h1>
         </div>
-        
+
         <div className="navbar-right">
           <button
             className="navbar-icon-btn hide-mobile"
@@ -64,7 +64,7 @@ const Navbar: React.FC = () => {
               <span className="navbar-badge">{pendingCount}</span>
             )}
           </button>
-          
+
           <div className="navbar-profile" onClick={toggleMenu}>
             <div className="avatar-wrapper">
               <img
@@ -73,11 +73,11 @@ const Navbar: React.FC = () => {
                 className="navbar-avatar"
               />
             </div>
-            
+
             {menuOpen && (
               <div className="navbar-dropdown glass-panel animate-pop-in">
                 <div className="dropdown-header">
-                  <span className="user-name">{user?.username || 'Explorer'}</span>
+                  <span className="user-name">{user?.username || 'Explorer'}</span> <br></br>
                   <span className="user-email">{user?.email}</span>
                 </div>
                 <div className="dropdown-divider"></div>
