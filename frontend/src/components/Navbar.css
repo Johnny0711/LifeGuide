@@ -31,7 +31,6 @@
 
 .navbar-logo span {
   font-weight: 400;
-  opacity: 0.8;
 }
 
 .navbar-right {
@@ -91,7 +90,7 @@
 .navbar-dropdown {
   position: absolute;
   top: calc(100% + 1rem);
-  right: 1rem;
+  right: 0;
   min-width: 200px;
   padding: 8px;
   display: flex;
