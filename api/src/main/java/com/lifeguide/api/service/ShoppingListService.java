@@ -105,8 +105,9 @@ public class ShoppingListService {
 
     @Transactional
     public void deleteItem(String email, UUID listId, UUID itemId) {
-        getAccessibleList(email, listId);
-        itemRepository.deleteById(itemId);
+        ShoppingList list = getAccessibleList(email, listId);
+        list.getItems().removeIf(item -> item.getId().equals(itemId));
+        shoppingListRepository.save(list);
     }
 
     // --- Invites ---

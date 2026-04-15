@@ -75,8 +75,9 @@ public class WorkoutService {
     }
 
     public void deleteExercise(String email, UUID splitId, UUID exerciseId) {
-        getOwnedSplit(email, splitId); // Validation
-        exerciseRepository.deleteById(exerciseId);
+        WorkoutSplit split = getOwnedSplit(email, splitId);
+        split.getExercises().removeIf(e -> e.getId().equals(exerciseId));
+        workoutSplitRepository.save(split);
     }
 
     public void reorderExercises(String email, UUID splitId, List<UUID> orderedIds) {
