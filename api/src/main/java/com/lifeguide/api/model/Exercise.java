@@ -16,6 +16,9 @@ public class Exercise {
     private int reps;
     private double weight;
 
+    @Column(name = "sort_order")
+    private int sortOrder = 0;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_split_id", nullable = false)
     @com.fasterxml.jackson.annotation.JsonIgnore
@@ -34,6 +37,8 @@ public class Exercise {
     public void setReps(int reps) { this.reps = reps; }
     public double getWeight() { return weight; }
     public void setWeight(double weight) { this.weight = weight; }
+    public int getSortOrder() { return sortOrder; }
+    public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
     public WorkoutSplit getWorkoutSplit() { return workoutSplit; }
     public void setWorkoutSplit(WorkoutSplit workoutSplit) { this.workoutSplit = workoutSplit; }
 }
