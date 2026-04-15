@@ -27,40 +27,50 @@ public class WorkoutService {
         this.userService = userService;
     }
 
+    @Transactional(readOnly = true)
     public List<WorkoutSplit> getWorkoutsForUser(String email) {
-        return workoutSplitRepository.findByUserEmailOrderByCreatedAtAsc(email);
+        return workoutSplitRepository.findByUser_EmailOrderByCreatedAtAsc(email);
     }
 
+    @Transactional
     public WorkoutSplit createSplit(String email, WorkoutSplit splitData) {
         User user = userService.getUserByEmail(email);
         splitData.setUser(user);
         if (splitData.getExercises() != null) {
             splitData.getExercises().forEach(e -> e.setWorkoutSplit(splitData));
         }
-        return workoutSplitRepository.save(splitData);
+        return workoutSplitRepository.saveAndFlush(splitData);
     }
 
+    @Transactional
     public WorkoutSplit updateSplit(String email, UUID splitId, WorkoutSplit updates) {
         WorkoutSplit split = getOwnedSplit(email, splitId);
         if (updates.getDay() != null) split.setDay(updates.getDay());
         if (updates.getSplitName() != null) split.setSplitName(updates.getSplitName());
-        return workoutSplitRepository.save(split);
+        return workoutSplitRepository.saveAndFlush(split);
     }
 
+    @Transactional
     public void deleteSplit(String email, UUID splitId) {
         WorkoutSplit split = getOwnedSplit(email, splitId);
         workoutSplitRepository.delete(split);
+        workoutSplitRepository.flush();
     }
 
+    @Transactional
     public Exercise addExercise(String email, UUID splitId, Exercise exercise) {
         WorkoutSplit split = getOwnedSplit(email, splitId);
         // Assign sortOrder = current count so new exercises go to the end
         int nextOrder = split.getExercises().size();
         exercise.setSortOrder(nextOrder);
         exercise.setWorkoutSplit(split);
-        return exerciseRepository.save(exercise);
+        Exercise saved = exerciseRepository.save(exercise);
+        split.getExercises().add(saved);
+        workoutSplitRepository.saveAndFlush(split);
+        return saved;
     }
 
+    @Transactional
     public Exercise updateExercise(String email, UUID splitId, UUID exerciseId, Exercise updates) {
         getOwnedSplit(email, splitId); // Validation
         Exercise exercise = exerciseRepository.findById(exerciseId)
@@ -71,15 +81,17 @@ public class WorkoutService {
         if (updates.getReps() > 0) exercise.setReps(updates.getReps());
         if (updates.getWeight() >= 0) exercise.setWeight(updates.getWeight());
 
-        return exerciseRepository.save(exercise);
+        return exerciseRepository.saveAndFlush(exercise);
     }
 
+    @Transactional
     public void deleteExercise(String email, UUID splitId, UUID exerciseId) {
         WorkoutSplit split = getOwnedSplit(email, splitId);
         split.getExercises().removeIf(e -> e.getId().equals(exerciseId));
-        workoutSplitRepository.save(split);
+        workoutSplitRepository.saveAndFlush(split);
     }
 
+    @Transactional
     public void reorderExercises(String email, UUID splitId, List<UUID> orderedIds) {
         getOwnedSplit(email, splitId); // Validation
         List<Exercise> toSave = new ArrayList<>();
@@ -90,7 +102,7 @@ public class WorkoutService {
             exercise.setSortOrder(i);
             toSave.add(exercise);
         }
-        exerciseRepository.saveAll(toSave);
+        exerciseRepository.saveAllAndFlush(toSave);
     }
 
     private WorkoutSplit getOwnedSplit(String email, UUID splitId) {
