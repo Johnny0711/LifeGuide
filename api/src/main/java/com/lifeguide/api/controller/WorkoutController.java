@@ -23,6 +23,7 @@ public class WorkoutController {
 
     @GetMapping
     public List<WorkoutSplit> getWorkouts(@AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println("DEBUG: GET /api/workouts hit for user: " + userDetails.getUsername());
         return workoutService.getWorkoutsForUser(userDetails.getUsername());
     }
 
