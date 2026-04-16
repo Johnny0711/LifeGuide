@@ -190,10 +190,14 @@
 }
 
 .pass-uploaded-img {
-    max-width: 100%;
-    max-height: 150px;
-    object-fit: contain;
-    border-radius: 6px;
+    width: calc(100% + 3rem);
+    height: auto;
+    min-height: 150px;
+    max-height: 280px;
+    margin: -1.5rem -1.5rem -1.5rem -1.5rem;
+    object-fit: cover;
+    border-radius: 0 0 18px 18px;
+    display: block;
 }
 
 .barcode-text {
