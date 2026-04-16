@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './GymCardModal.css';
-import { X, Check } from 'lucide-react';
+import { X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import api from '../services/apiService';
 import { Button } from './ui/Button';
