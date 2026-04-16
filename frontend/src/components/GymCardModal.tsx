@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './GymCardModal.css';
-import { X, MoreHorizontal, RotateCcw } from 'lucide-react';
+import { X, MoreHorizontal } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
 import api from '../services/apiService';
