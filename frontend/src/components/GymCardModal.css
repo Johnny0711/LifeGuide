@@ -53,8 +53,9 @@
     width: 100%;
     height: 100%;
     position: relative;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     transform-style: preserve-3d;
+    will-change: transform;
 }
 
 .wallet-flip-container.flipped .wallet-pass-flipper {
@@ -70,7 +71,7 @@
     backface-visibility: hidden;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
 }
@@ -126,6 +127,7 @@
     cursor: pointer;
     backdrop-filter: blur(4px);
     transition: background 0.2s;
+    will-change: background;
 }
 
 .info-pass-btn:hover {
@@ -176,6 +178,13 @@
     display: flex;
     justify-content: center;
     width: 100%;
+}
+
+.pass-uploaded-img {
+    max-width: 100%;
+    max-height: 140px;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
 .barcode-text {

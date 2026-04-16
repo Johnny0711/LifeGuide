@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './GymCardModal.css';
-import { X, MoreHorizontal } from 'lucide-react';
+import { X, MoreHorizontal, Upload } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
 import api from '../services/apiService';
@@ -22,11 +22,12 @@ interface GymCardModalProps {
 
 const GymCardModal: React.FC<GymCardModalProps> = ({ isOpen, onClose, cardData, onSaveSuccess }) => {
     
-    // Check for format prefix (QR| or 1D|)
+    // Check for format prefix (QR| or 1D| or IMG|)
     const parseBarcode = (val: string) => {
         if (!val) return { format: '1D', value: '' };
         if (val.startsWith('QR|')) return { format: 'QR', value: val.substring(3) };
         if (val.startsWith('1D|')) return { format: '1D', value: val.substring(3) };
+        if (val.startsWith('IMG|')) return { format: 'IMAGE', value: val.substring(4) };
         return { format: '1D', value: val }; // Default for old data
     };
 
@@ -40,13 +41,46 @@ const GymCardModal: React.FC<GymCardModalProps> = ({ isOpen, onClose, cardData, 
         colorTheme: cardData?.colorTheme || '#1a1a1a'
     });
     const [isSaving, setIsSaving] = useState(false);
+    
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
+
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const base64Str = event.target?.result as string;
+            // Compress Image
+            const img = new Image();
+            img.src = base64Str;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const maxWidth = 500;
+                let width = img.width;
+                let height = img.height;
+                if (width > maxWidth) {
+                    height = Math.round(height * maxWidth / width);
+                    width = maxWidth;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0, width, height);
+                const compressed = canvas.toDataURL('image/jpeg', 0.85);
+                setFormData({ ...formData, format: 'IMAGE', barcodeValue: compressed });
+            };
+        };
+        reader.readAsDataURL(file);
+    };
 
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            const packedBarcode = `${formData.format}|${formData.barcodeValue}`;
+            const prefix = formData.format === 'IMAGE' ? 'IMG|' : (formData.format === 'QR' ? 'QR|' : '1D|');
+            const packedBarcode = `${prefix}${formData.barcodeValue}`;
             const payload: GymCardData = {
                 gymName: formData.gymName,
                 barcodeValue: packedBarcode,
@@ -66,7 +100,6 @@ const GymCardModal: React.FC<GymCardModalProps> = ({ isOpen, onClose, cardData, 
         <div className="gym-modal-overlay animate-fade-in" onClick={onClose}>
             <div className="gym-modal-container slide-up" onClick={(e) => e.stopPropagation()}>
                 
-                {/* Close Button top-right outside card */}
                 <button className="super-close-btn" onClick={onClose}>
                     <span>Done</span>
                 </button>
@@ -104,6 +137,12 @@ const GymCardModal: React.FC<GymCardModalProps> = ({ isOpen, onClose, cardData, 
                                             level="M"
                                             includeMargin={false}
                                         />
+                                    ) : formData.format === 'IMAGE' ? (
+                                        formData.barcodeValue ? (
+                                            <img src={formData.barcodeValue} alt="Code" className="pass-uploaded-img" />
+                                        ) : (
+                                            <span style={{color: '#999'}}>No Image Loaded</span>
+                                        )
                                     ) : (
                                         <Barcode 
                                             value={formData.barcodeValue || '123456789'}
@@ -115,7 +154,9 @@ const GymCardModal: React.FC<GymCardModalProps> = ({ isOpen, onClose, cardData, 
                                         />
                                     )}
                                 </div>
-                                <span className="barcode-text">{formData.barcodeValue}</span>
+                                {formData.format !== 'IMAGE' && (
+                                    <span className="barcode-text">{formData.barcodeValue}</span>
+                                )}
                             </div>
                         </div>
 
@@ -138,15 +179,6 @@ const GymCardModal: React.FC<GymCardModalProps> = ({ isOpen, onClose, cardData, 
                                     />
                                 </div>
 
-                                <div className="form-group">
-                                    <label>Member ID / Code</label>
-                                    <Input 
-                                        placeholder="e.g. 192837465" 
-                                        value={formData.barcodeValue}
-                                        onChange={e => setFormData({...formData, barcodeValue: e.target.value})}
-                                    />
-                                </div>
-
                                 <div className="form-group row-group">
                                     <label>Code Type:</label>
                                     <div className="format-toggles">
@@ -162,8 +194,39 @@ const GymCardModal: React.FC<GymCardModalProps> = ({ isOpen, onClose, cardData, 
                                         >
                                             QR Code
                                         </button>
+                                        <button 
+                                            className={`toggle-btn ${formData.format === 'IMAGE' ? 'active' : ''}`}
+                                            onClick={() => setFormData({...formData, format: 'IMAGE'})}
+                                        >
+                                            Photo
+                                        </button>
                                     </div>
                                 </div>
+
+                                {formData.format === 'IMAGE' ? (
+                                    <div className="form-group">
+                                        <label>Upload Code Image</label>
+                                        <input 
+                                            type="file" 
+                                            accept="image/*" 
+                                            ref={fileInputRef} 
+                                            style={{ display: 'none' }} 
+                                            onChange={handleImageUpload}
+                                        />
+                                        <Button variant="secondary" onClick={() => fileInputRef.current?.click()} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                                            <Upload size={16} /> Choose Image
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="form-group">
+                                        <label>Member ID / Code Number</label>
+                                        <Input 
+                                            placeholder="e.g. 192837465" 
+                                            value={formData.barcodeValue}
+                                            onChange={e => setFormData({...formData, barcodeValue: e.target.value})}
+                                        />
+                                    </div>
+                                )}
 
                                 <div className="form-group row-group">
                                     <label>Card Color:</label>
