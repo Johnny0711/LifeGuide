@@ -6,6 +6,7 @@ import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
 import { ConfirmModal } from './ui/ConfirmModal';
+import GymCardModal from './GymCardModal';
 import './Workouts.css';
 
 const Workouts: React.FC = () => {
@@ -39,10 +40,26 @@ const Workouts: React.FC = () => {
         confirmAction: async () => { }
     });
 
+    // Gym Card State
+    const [gymCard, setGymCard] = useState<any>(null);
+    const [isGymCardOpen, setIsGymCardOpen] = useState<boolean>(false);
+
     useEffect(() => {
         fetchSplits();
         fetchProgressData();
+        fetchGymCard();
     }, []);
+
+    const fetchGymCard = async () => {
+        try {
+            const response = await api.get('/gym-cards');
+            if (response.data) {
+                setGymCard(response.data);
+            }
+        } catch (error) {
+            // No content or error
+        }
+    };
 
     const fetchProgressData = async () => {
         try {
@@ -280,9 +297,18 @@ const Workouts: React.FC = () => {
     return (
         <div className="workouts-container">
             <header className="workouts-header animate-fade-in">
-                <div className="header-main">
-                    <h1><Dumbbell className="header-icon" /> Fitness Tracker</h1>
-                    <p>Track your weekly routines and overall physical progress.</p>
+                <div className="header-main" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <h1><Dumbbell className="header-icon" /> Fitness Tracker</h1>
+                        <p>Track your weekly routines and overall physical progress.</p>
+                    </div>
+                    <Button 
+                        variant="secondary" 
+                        onClick={() => setIsGymCardOpen(true)}
+                        style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', borderRadius: '12px', background: 'var(--glass-bg)', borderColor: 'var(--accent-primary)', color: 'var(--accent-primary)' }}
+                    >
+                        <span style={{ fontSize: '1.2rem' }}>💳</span> Gym Pass
+                    </Button>
                 </div>
 
                 <div className="tab-switcher glass-panel">
@@ -300,6 +326,13 @@ const Workouts: React.FC = () => {
                     </button>
                 </div>
             </header>
+
+            <GymCardModal 
+                isOpen={isGymCardOpen} 
+                onClose={() => setIsGymCardOpen(false)} 
+                cardData={gymCard} 
+                onSaveSuccess={(data) => setGymCard(data)} 
+            />
 
             <div className="view-content-wrapper" key={activeTab}>
                 {activeTab === 'routines' ? (
