@@ -39,6 +39,8 @@ public class Exercise {
     public void setWeight(double weight) { this.weight = weight; }
     public int getSortOrder() { return sortOrder; }
     public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public WorkoutSplit getWorkoutSplit() { return workoutSplit; }
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public void setWorkoutSplit(WorkoutSplit workoutSplit) { this.workoutSplit = workoutSplit; }
 }

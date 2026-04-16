@@ -46,6 +46,8 @@ public class WorkoutSplit {
     public void setExercises(List<Exercise> exercises) { this.exercises = exercises; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    @JsonIgnore
     public User getUser() { return user; }
+    @JsonIgnore
     public void setUser(User user) { this.user = user; }
 }
