@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: flex;
@@ -12,27 +12,71 @@
     align-items: center;
     z-index: 1000;
     padding: 1rem;
+    overflow-y: auto;
 }
 
-.gym-modal-content {
+.gym-modal-container {
     width: 100%;
     max-width: 360px;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
+    margin: auto;
 }
 
-/* Apple Wallet Pass Look */
-.wallet-pass {
+.super-close-btn {
+    align-self: flex-end;
+    background: white;
+    color: black;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+.super-close-btn:active {
+    transform: scale(0.95);
+}
+
+.wallet-flip-container {
+    perspective: 1000px;
     width: 100%;
     aspect-ratio: 9 / 16;
     max-height: 80vh;
+}
+
+.wallet-pass-flipper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.wallet-flip-container.flipped .wallet-pass-flipper {
+    transform: rotateY(180deg);
+}
+
+.wallet-pass-front, .wallet-pass-back {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    backface-visibility: hidden;
     border-radius: 20px;
     overflow: hidden;
-    position: relative;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     display: flex;
     flex-direction: column;
+}
+
+/* FRONT */
+.wallet-pass-front {
     color: white;
     transition: background-color 0.4s ease;
 }
@@ -69,7 +113,7 @@
     text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
-.close-pass-btn {
+.info-pass-btn {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     color: white;
@@ -84,7 +128,7 @@
     transition: background 0.2s;
 }
 
-.close-pass-btn:hover {
+.info-pass-btn:hover {
     background: rgba(255, 255, 255, 0.4);
 }
 
@@ -127,9 +171,11 @@
 
 .barcode-bg {
     background: white;
-    padding: 1rem;
+    padding: 0.5rem;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 .barcode-text {
@@ -139,38 +185,76 @@
     letter-spacing: 0.1em;
 }
 
-/* Controls */
-.pass-controls {
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
-    padding: 1rem;
-    border: 1px solid var(--glass-border);
+/* BACK (EDIT) */
+.wallet-pass-back {
+    background: #1c1c1e; /* Apple dark theme typical */
+    transform: rotateY(180deg);
+    color: white;
+    padding: 1.5rem;
+}
+
+.back-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.back-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
 }
 
 .edit-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
+    flex: 1;
+    overflow-y: auto;
 }
 
-.edit-form h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
-}
-
-.color-picker-group {
+.form-group {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem;
-    background: rgba(255,255,255,0.03);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--glass-border);
+    flex-direction: column;
+    gap: 0.4rem;
 }
 
-.color-picker-group label {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+.form-group label {
+    font-size: 0.85rem;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.row-group {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.format-toggles {
+    display: flex;
+    background: #2c2c2e;
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.toggle-btn {
+    background: transparent;
+    border: none;
+    color: #a1a1aa;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toggle-btn.active {
+    background: #3a3a3c;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .color-input {
@@ -187,7 +271,7 @@
     padding: 0;
 }
 .color-input::-webkit-color-swatch {
-    border: 2px solid var(--glass-border);
+    border: 2px solid rgba(255,255,255,0.2);
     border-radius: 8px;
 }
 
