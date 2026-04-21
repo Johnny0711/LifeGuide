@@ -21,6 +21,12 @@ public class WorkoutController {
         this.workoutService = workoutService;
     }
 
+    // DEBUG: ping endpoint to test if auth works for this path
+    @GetMapping("/ping")
+    public String ping(@AuthenticationPrincipal UserDetails userDetails) {
+        return "pong - user: " + (userDetails != null ? userDetails.getUsername() : "NULL");
+    }
+
     @GetMapping
     public List<WorkoutSplit> getWorkouts(@AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("DEBUG: GET /api/workouts hit for user: " + userDetails.getUsername());

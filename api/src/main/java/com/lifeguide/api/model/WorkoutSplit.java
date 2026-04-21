@@ -30,7 +30,6 @@ public class WorkoutSplit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
     private User user;
 
     public WorkoutSplit() {}
@@ -50,4 +49,5 @@ public class WorkoutSplit {
     public User getUser() { return user; }
     @JsonIgnore
     public void setUser(User user) { this.user = user; }
+
 }
