@@ -16,7 +16,7 @@ public class Exercise {
     private int reps;
     private double weight;
 
-    @Column(name = "sort_order")
+    @Column(name = "sort_order", columnDefinition = "INTEGER NOT NULL DEFAULT 0")
     private int sortOrder = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
