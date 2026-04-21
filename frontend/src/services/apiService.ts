@@ -23,6 +23,24 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
+// Automatisch ausloggen wenn Token ungültig/abgelaufen (401 oder 403)
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            // Prüfen ob es ein Auth-Endpoint ist (Login), dann nicht ausloggen
+            const url = error.config?.url || '';
+            if (!url.includes('/auth/')) {
+                console.warn('Token ungültig oder abgelaufen. Benutzer wird ausgeloggt.');
+                localStorage.removeItem('token');
+                // Seite neu laden damit AuthContext reagiert
+                window.location.href = '/';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 // A helper function to inject the auth token into every request
 export const setAuthToken = (token: string | null) => {
     if (token) {
@@ -32,4 +50,4 @@ export const setAuthToken = (token: string | null) => {
     }
 };
 
-export default api;
+export default api;
