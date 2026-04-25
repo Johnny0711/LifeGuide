@@ -1,37 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap');
+
 :root {
-  /* Vibrant & Modern HSL Palette */
-  --bg-primary: hsl(222, 25%, 7%);
-  --bg-secondary: hsl(222, 25%, 10%);
-  --bg-tertiary: hsl(222, 25%, 15%);
+  /* Dribbble HSL Palette */
+  --bg-primary: #121217;
+  --bg-secondary: #1A1A24;
+  --bg-tertiary: #22222A;
+  --bg-elevated: #282833;
 
-  --text-primary: hsl(210, 20%, 98%);
-  --text-secondary: hsl(215, 15%, 75%);
-  --text-muted: hsl(215, 15%, 55%);
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0AB;
+  --text-muted: #6B6B78;
 
-  --accent-primary: hsl(245, 90%, 68%); /* Indigo Glow */
-  --accent-secondary: hsl(265, 85%, 65%); /* Violet Bloom */
-  --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  --accent-glow: hsla(245, 90%, 68%, 0.35);
+  --accent-green: #7AFFA1;
+  --accent-yellow: #FFF87C;
+  --accent-purple: #DDCBF5;
+  --accent-orange: #FFA27D;
+  
+  --accent-primary: var(--accent-purple); /* Default primary */
+  --accent-secondary: var(--accent-green);
+  --accent-glow: rgba(221, 203, 245, 0.35); /* Purple glow */
 
-  --success: hsl(155, 80%, 45%);
-  --warning: hsl(35, 95%, 55%);
-  --danger: hsl(0, 85%, 60%);
-  --info: hsl(200, 90%, 55%);
+  --success: var(--accent-green);
+  --warning: var(--accent-yellow);
+  --danger: #FF6B6B; /* A complementary red if needed */
+  --info: #7AB8FF;
 
   /* Advanced Glassmorphism */
-  --glass-bg: hsla(222, 25%, 10%, 0.65);
-  --glass-border: hsla(0, 0%, 100%, 0.08);
-  --glass-shadow: 0 12px 40px 0 hsla(0, 0%, 0%, 0.45);
-  --glass-blur: 16px;
+  --glass-bg: rgba(42, 42, 53, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.5);
+  --glass-blur: 24px;
 
   /* Typography Scale */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Outfit', var(--font-sans);
+  --font-sans: 'Urbanist', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Urbanist', var(--font-sans);
 
   /* Radii */
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
   --radius-xl: 32px;
   --radius-full: 9999px;
 
@@ -51,9 +58,7 @@
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-primary);
-  background-image: 
-    radial-gradient(at 0% 0%, hsla(245, 90%, 68%, 0.05) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(265, 85%, 65%, 0.05) 0px, transparent 50%);
+  background-image: linear-gradient(145deg, var(--bg-primary) 0%, #0d0d10 100%);
   color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -65,9 +70,9 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 h1 { font-size: clamp(2.5rem, 8vw, 4rem); }
@@ -89,6 +94,7 @@ button {
   align-items: center;
   justify-content: center;
   transition: all var(--transition-normal);
+  font-weight: 600;
 }
 
 ul { list-style: none; }
@@ -131,8 +137,8 @@ ul { list-style: none; }
 
 /* Scrollbar Modernization */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
@@ -155,8 +161,8 @@ ul { list-style: none; }
 }
 
 /* Smooth Input Focus */
-input:focus, textarea:focus {
+input:focus, textarea:focus, select:focus {
   outline: none;
-  border-color: var(--accent-primary) !important;
+  border-color: var(--accent-purple) !important;
   box-shadow: 0 0 0 4px var(--accent-glow);
 }
