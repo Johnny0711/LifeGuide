@@ -172,7 +172,13 @@
     }
 
     .insight-icon {
-        display: none; /* Hide icons on very small screens to keep row layout */
+        width: 30px;
+        height: 30px;
+        margin-right: -0.2rem;
+    }
+    .insight-icon svg {
+        width: 18px;
+        height: 18px;
     }
 
     .insight-value {
