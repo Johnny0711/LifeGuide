@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, UUID> {
     List<Todo> findByUserEmailOrderByCreatedAtDesc(String email);
+    void deleteByUser(com.lifeguide.api.model.User user);
 }

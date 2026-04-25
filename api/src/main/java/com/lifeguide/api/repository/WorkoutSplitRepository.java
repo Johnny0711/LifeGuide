@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface WorkoutSplitRepository extends JpaRepository<WorkoutSplit, UUID> {
     List<WorkoutSplit> findByUser_EmailOrderByCreatedAtAsc(String email);
+    void deleteByUser(com.lifeguide.api.model.User user);
 }

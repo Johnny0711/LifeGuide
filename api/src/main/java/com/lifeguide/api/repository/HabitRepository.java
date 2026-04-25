@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface HabitRepository extends JpaRepository<Habit, UUID> {
     List<Habit> findByUserEmailOrderByCreatedAtAsc(String email);
+    void deleteByUser(com.lifeguide.api.model.User user);
 }

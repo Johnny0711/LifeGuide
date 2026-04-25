@@ -16,4 +16,9 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, UUID
 
     @Query("SELECT sl FROM ShoppingList sl JOIN sl.sharedWith sw WHERE sw.email = :email ORDER BY sl.createdAt DESC")
     List<ShoppingList> findSharedWithUser(@Param("email") String email);
+
+    @Query("SELECT sl FROM ShoppingList sl JOIN sl.sharedWith sw WHERE sw = :user")
+    List<ShoppingList> findSharedWithUserObj(@Param("user") com.lifeguide.api.model.User user);
+
+    void deleteByOwner(com.lifeguide.api.model.User user);
 }

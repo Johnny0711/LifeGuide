@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface PinRepository extends JpaRepository<Pin, UUID> {
     List<Pin> findByUserEmailOrderByCreatedAtDesc(String email);
+    void deleteByUser(com.lifeguide.api.model.User user);
 }

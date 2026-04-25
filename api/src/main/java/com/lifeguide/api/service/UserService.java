@@ -1,8 +1,9 @@
 package com.lifeguide.api.service;
 
+import com.lifeguide.api.model.ShoppingList;
 import com.lifeguide.api.model.User;
 import com.lifeguide.api.model.Role;
-import com.lifeguide.api.repository.UserRepository;
+import com.lifeguide.api.repository.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +17,35 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TodoRepository todoRepository;
+    private final PinRepository pinRepository;
+    private final HabitRepository habitRepository;
+    private final GymCardRepository gymCardRepository;
+    private final FitnessLogRepository fitnessLogRepository;
+    private final WorkoutSplitRepository workoutSplitRepository;
+    private final ShoppingListRepository shoppingListRepository;
+    private final ShoppingListInviteRepository shoppingListInviteRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, 
+                       PasswordEncoder passwordEncoder,
+                       TodoRepository todoRepository,
+                       PinRepository pinRepository,
+                       HabitRepository habitRepository,
+                       GymCardRepository gymCardRepository,
+                       FitnessLogRepository fitnessLogRepository,
+                       WorkoutSplitRepository workoutSplitRepository,
+                       ShoppingListRepository shoppingListRepository,
+                       ShoppingListInviteRepository shoppingListInviteRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.todoRepository = todoRepository;
+        this.pinRepository = pinRepository;
+        this.habitRepository = habitRepository;
+        this.gymCardRepository = gymCardRepository;
+        this.fitnessLogRepository = fitnessLogRepository;
+        this.workoutSplitRepository = workoutSplitRepository;
+        this.shoppingListRepository = shoppingListRepository;
+        this.shoppingListInviteRepository = shoppingListInviteRepository;
     }
 
 
@@ -44,7 +70,32 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Transactional
     public void deleteUser(UUID id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return;
+        }
+
+        // Remove user from all shared shopping lists
+        List<ShoppingList> sharedLists = shoppingListRepository.findSharedWithUserObj(user);
+        for (ShoppingList list : sharedLists) {
+            list.getSharedWith().remove(user);
+            shoppingListRepository.save(list);
+        }
+
+        // Delete dependencies
+        shoppingListInviteRepository.deleteBySender(user);
+        shoppingListInviteRepository.deleteByRecipient(user);
+        shoppingListRepository.deleteByOwner(user);
+        workoutSplitRepository.deleteByUser(user);
+        fitnessLogRepository.deleteByUser(user);
+        gymCardRepository.deleteByUser(user);
+        habitRepository.deleteByUser(user);
+        pinRepository.deleteByUser(user);
+        todoRepository.deleteByUser(user);
+
+        // Delete user
         userRepository.deleteById(id);
     }
 

@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface FitnessLogRepository extends JpaRepository<FitnessLog, Long> {
     List<FitnessLog> findByUserOrderByRecordedAtAsc(User user);
+    void deleteByUser(User user);
 }

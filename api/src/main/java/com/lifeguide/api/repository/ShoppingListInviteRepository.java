@@ -14,4 +14,7 @@ public interface ShoppingListInviteRepository extends JpaRepository<ShoppingList
             String email, ShoppingListInvite.Status status);
 
     List<ShoppingListInvite> findByRecipientEmailOrderByCreatedAtDesc(String email);
+
+    void deleteBySender(com.lifeguide.api.model.User user);
+    void deleteByRecipient(com.lifeguide.api.model.User user);
 }
