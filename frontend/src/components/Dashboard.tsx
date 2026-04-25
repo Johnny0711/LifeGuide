@@ -7,7 +7,6 @@ import {
     Pin,
     ShoppingBag,
     MessageSquare,
-    Search,
     Target,
     User,
     Award,
