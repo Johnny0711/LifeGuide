@@ -434,7 +434,8 @@
 }
 
 .mod-footer strong { color: white; }
-.dot-btn { color: var(--text-muted); background: rgba(255, 255, 255, 0.05); border-radius: 50%; width: 24px; height: 24px; }
+.dot-btn { color: var(--text-primary); background: var(--bg-elevated); border-radius: 50%; width: 24px; height: 24px; transition: all 0.2s; }
+.dot-btn:hover { background: var(--text-primary); color: var(--bg-primary); }
 
 
 /* Right Pane */
@@ -571,9 +572,9 @@
     right: 1.5rem;
     width: 24px;
     height: 24px;
-    background: rgba(255, 255, 255, 0.3);
+    background: #ffffff;
     border-radius: 50%;
-    color: var(--bg-primary);
+    color: #121217;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -1,8 +1,7 @@
 .navbar-dribbble {
   position: sticky;
   top: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
+  margin: 0 auto 2rem auto;
   width: calc(100% - 3rem);
   max-width: 1400px;
   height: 4.5rem;
@@ -79,9 +78,9 @@
   gap: 0.5rem;
   padding: 0.6rem 1.25rem;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: white; /* Made white for better legibility */
+  background: var(--bg-elevated);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 600;
   transition: all 0.2s;
@@ -90,8 +89,9 @@
 }
 
 .nav-d-pill-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--bg-tertiary);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .nav-d-badge {

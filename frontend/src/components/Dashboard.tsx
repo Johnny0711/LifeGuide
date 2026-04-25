@@ -138,9 +138,6 @@ const Dashboard: React.FC = () => {
                                 <h3>Quick Launch</h3>
                                 <span className="item-count">6 Modules</span>
                             </div>
-                            <div className="pane-search">
-                                <Search size={14} /> <input type="text" placeholder="Search modules..." />
-                            </div>
                         </div>
 
                         <div className="db-modules-grid">
