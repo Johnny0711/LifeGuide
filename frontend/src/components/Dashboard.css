@@ -509,6 +509,11 @@
     z-index: 2;
 }
 
+.act-card.act-green {
+    background: var(--accent-green);
+    z-index: 3;
+}
+
 .act-card-date {
     display: flex;
     flex-direction: column;
@@ -569,6 +574,16 @@
     background: rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     color: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-weight: 800;
+    transition: transform 0.2s;
+}
+
+.act-go:hover {
+    transform: scale(1.1);
 }
 
 @media (max-width: 1024px) {
