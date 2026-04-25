@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
     CheckCircle2,
     Flame,
@@ -8,22 +8,18 @@ import {
     ShoppingBag,
     MessageSquare,
     Search,
-    Grid,
     Target,
     User,
     Award,
     Calendar,
-    ArrowRight,
-    Settings,
-    LogOut
+    ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/apiService';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
+    const { user } = useAuth();
     const [metrics, setMetrics] = useState({
         habitScore: 0,
         maxStreak: 0,
@@ -71,11 +67,6 @@ const Dashboard: React.FC = () => {
 
         fetchDashboardData();
     }, []);
-
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
 
     return (
         <div className="db-container animate-fade-in">
