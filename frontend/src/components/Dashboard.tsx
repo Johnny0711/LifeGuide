@@ -79,24 +79,6 @@ const Dashboard: React.FC = () => {
 
     return (
         <div className="db-container animate-fade-in">
-            {/* Top Navbar */}
-            <header className="db-header">
-                <div className="db-header-left">
-                    <div className="db-logo">LG.</div>
-                    <div className="db-title-group">
-                        <button className="db-icon-btn"><Grid size={16} /></button>
-                        <h2>LifeGuide Dashboard</h2>
-                    </div>
-                </div>
-                <div className="db-header-right">
-                    <button className="db-pill-btn"><Settings size={14} /> Settings</button>
-                    <button className="db-pill-btn" onClick={handleLogout}><LogOut size={14} /> Logout</button>
-                    <div className="db-avatar">
-                        <User size={18} />
-                    </div>
-                </div>
-            </header>
-
             {/* The Huge Hero Section */}
             <section className="db-hero">
                 <div className="db-hero-top">

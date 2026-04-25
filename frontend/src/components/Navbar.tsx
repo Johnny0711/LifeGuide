@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Mail, Settings, LogOut, Shield } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Mail, Settings, LogOut, Shield, Grid, User } from 'lucide-react';
 import api from '../services/apiService';
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
 
@@ -46,62 +47,66 @@ const Navbar: React.FC = () => {
     navigate('/admin');
   };
 
+  const getPageTitle = () => {
+    switch (location.pathname) {
+      case '/': return 'Dashboard';
+      case '/todos': return 'Tasks';
+      case '/habits': return 'Habits';
+      case '/workouts': return 'Fitness';
+      case '/pins': return 'Pins';
+      case '/shopping-lists': return 'Shopping';
+      case '/messages': return 'Messages';
+      case '/profile': return 'Settings';
+      case '/admin': return 'Admin Panel';
+      default: return 'LifeGuide';
+    }
+  };
+
   return (
-    <nav className="navbar glass-panel">
-      <div className="navbar-container">
-        <div className="navbar-left" onClick={() => navigate('/')}>
-          <h1 className="navbar-logo">Life<span>Guide</span></h1>
-        </div>
-
-        <div className="navbar-right">
-          <button
-            className="navbar-icon-btn hide-mobile"
-            onClick={() => navigate('/messages')}
-            title="Messages"
-          >
-            <Mail size={22} />
-            {pendingCount > 0 && (
-              <span className="navbar-badge">{pendingCount}</span>
-            )}
+    <nav className="navbar-dribbble">
+      <div className="nav-d-left">
+        <div className="nav-d-logo" onClick={() => navigate('/')}>LG.</div>
+        <div className="nav-d-title-group">
+          <button className="nav-d-icon-btn" onClick={() => navigate('/')}>
+            <Grid size={16} />
           </button>
+          <h2>{getPageTitle()}</h2>
+        </div>
+      </div>
 
-          <div className="navbar-profile" onClick={toggleMenu}>
-            <div className="avatar-wrapper">
-              <img
-                src={'https://ui-avatars.com/api/?name=' + (user?.username || user?.email) + '&background=6366f1&color=fff'}
-                alt="Profile"
-                className="navbar-avatar"
-              />
-            </div>
+      <div className="nav-d-right">
+        <button className="nav-d-pill-btn hide-mobile" onClick={() => navigate('/messages')}>
+          <Mail size={14} /> Messages
+          {pendingCount > 0 && <span className="nav-d-badge">{pendingCount}</span>}
+        </button>
 
-            {menuOpen && (
-              <div className="navbar-dropdown glass-panel animate-pop-in">
-                <div className="dropdown-header">
-                  <span className="user-name">{user?.username || 'Explorer'}</span> <br></br>
-                  <span className="user-email">{user?.email}</span>
-                </div>
-                <div className="dropdown-divider"></div>
-                {user?.role === 'ADMIN' && (
-                  <>
-                    <button onClick={handleAdmin} className="dropdown-item">
-                      <Shield size={18} />
-                      Admin
-                    </button>
-                    <div className="dropdown-divider"></div>
-                  </>
-                )}
-                <button onClick={handleEditProfile} className="dropdown-item">
-                  <Settings size={18} />
-                  Settings
-                </button>
-                <div className="dropdown-divider"></div>
-                <button onClick={handleLogout} className="dropdown-item logout">
-                  <LogOut size={18} />
-                  Sign Out
-                </button>
-              </div>
-            )}
+        <div className="nav-d-profile-wrapper" onClick={toggleMenu}>
+          <div className="nav-d-avatar">
+            <User size={18} />
           </div>
+
+          {menuOpen && (
+            <div className="nav-d-dropdown">
+              <div className="nav-d-dropdown-header">
+                <strong>{user?.username || 'Explorer'}</strong>
+                <span>{user?.email}</span>
+              </div>
+              
+              {user?.role === 'ADMIN' && (
+                <button onClick={handleAdmin} className="nav-d-dropdown-item">
+                  <Shield size={16} /> Admin
+                </button>
+              )}
+              
+              <button onClick={handleEditProfile} className="nav-d-dropdown-item">
+                <Settings size={16} /> Settings
+              </button>
+              
+              <button onClick={handleLogout} className="nav-d-dropdown-item logout">
+                <LogOut size={16} /> Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>
