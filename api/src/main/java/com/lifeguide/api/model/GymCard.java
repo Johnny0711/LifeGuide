@@ -15,7 +15,7 @@ public class GymCard {
     @Column(name = "gym_name", nullable = false)
     private String gymName;
 
-    @Column(name = "card_data_value", columnDefinition = "TEXT")
+    @Column(name = "barcode_value", columnDefinition = "TEXT", nullable = false)
     private String barcodeValue;
 
     @Column(name = "color_theme")
