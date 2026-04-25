@@ -433,25 +433,29 @@ input[type=number] {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
+    gap: 0.25rem;
     width: 100%;
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
 
 .ex-metrics-row {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.25rem;
     justify-content: flex-start;
+    flex-shrink: 0;
 }
 
 .metric {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.8rem;
+    gap: 0.2rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     background: rgba(255, 255, 255, 0.05);
-    padding: 0.25rem 0.6rem;
+    padding: 0.15rem 0.4rem;
     border-radius: var(--radius-full);
+    white-space: nowrap;
 }
 
 @media (min-width: 768px) {
@@ -473,13 +477,13 @@ input[type=number] {
 }
 
 .metric-input-small {
-    width: 60px;
+    width: 45px;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     color: var(--text-primary);
     text-align: center;
-    padding: 0.3rem;
+    padding: 0.2rem;
     font-weight: 700;
     transition: all var(--transition-normal);
 }
@@ -511,9 +515,9 @@ input[type=number] {
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-md);
-    padding-right: 0.75rem;
+    padding-right: 0.5rem;
     flex: 1;
-    max-width: 140px;
+    max-width: 100px;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -530,10 +534,10 @@ input[type=number] {
     background: transparent !important;
     text-align: right;
     font-family: inherit;
-    font-size: 1.1rem !important;
+    font-size: 0.95rem !important;
     font-weight: 700;
     color: var(--accent-primary) !important;
-    padding: 0.4rem !important;
+    padding: 0.3rem !important;
     outline: none;
     transition: all var(--transition-normal);
 }

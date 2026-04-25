@@ -20,7 +20,7 @@ const BottomNav: React.FC = () => {
       </NavLink>
       <NavLink to="/shopping-lists" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
         <ShoppingBag size={24} />
-        <span>Store</span>
+        <span>Shopping</span>
       </NavLink>
       <NavLink to="/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
         <User size={24} />
