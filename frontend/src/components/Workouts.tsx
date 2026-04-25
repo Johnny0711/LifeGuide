@@ -426,9 +426,9 @@ const Workouts: React.FC = () => {
                                                                         <GripVertical size={18} />
                                                                     </div>
                                                                 )}
-                                                                <div className="ex-info">
-                                                                    {isEditMode ? (
-                                                                        <div className="ex-edit-header">
+                                                                <div className="ex-content">
+                                                                    <div className="ex-header-row">
+                                                                        {isEditMode ? (
                                                                             <input
                                                                                 type="text"
                                                                                 value={ex.name || ''}
@@ -437,66 +437,44 @@ const Workouts: React.FC = () => {
                                                                                 className="ex-name-input-edit"
                                                                                 placeholder="Exercise name"
                                                                             />
+                                                                        ) : (
+                                                                            <h4>{ex.name}</h4>
+                                                                        )}
+                                                                        {isEditMode && (
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="sm"
+                                                                                className="delete-ex-btn"
+                                                                                onClick={() => requestDeleteExercise(split.id, ex.id)}
+                                                                            >
+                                                                                <Trash2 size={16} />
+                                                                            </Button>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="ex-details-row">
+                                                                        <div className="ex-metrics-row">
+                                                                            <div className="metric">
+                                                                                <span title="Sets">S:</span>
+                                                                                {isEditMode ? (
+                                                                                    <input type="number" value={ex.sets ?? ''} onChange={(e) => handleExerciseChange(split.id, ex.id, { sets: parseInt(e.target.value) || 0 })} onBlur={(e) => persistExercise(split.id, ex.id, { sets: parseInt(e.target.value) || 0 })} className="metric-input-small" />
+                                                                                ) : (
+                                                                                    <strong>{ex.sets}</strong>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="metric">
+                                                                                <span title="Reps">R:</span>
+                                                                                {isEditMode ? (
+                                                                                    <input type="number" value={ex.reps ?? ''} onChange={(e) => handleExerciseChange(split.id, ex.id, { reps: parseInt(e.target.value) || 0 })} onBlur={(e) => persistExercise(split.id, ex.id, { reps: parseInt(e.target.value) || 0 })} className="metric-input-small" />
+                                                                                ) : (
+                                                                                    <strong>{ex.reps}</strong>
+                                                                                )}
+                                                                            </div>
                                                                         </div>
-                                                                    ) : (
-                                                                        <h4>{ex.name}</h4>
-                                                                    )}
-
-                                                                    <div className="ex-metrics-row">
-                                                                        <div className="metric">
-                                                                            <span>Sets:</span>
-                                                                            {isEditMode ? (
-                                                                                <input
-                                                                                    type="number"
-                                                                                    value={ex.sets ?? ''}
-                                                                                    onChange={(e) => handleExerciseChange(split.id, ex.id, { sets: parseInt(e.target.value) || 0 })}
-                                                                                    onBlur={(e) => persistExercise(split.id, ex.id, { sets: parseInt(e.target.value) || 0 })}
-                                                                                    className="metric-input-small"
-                                                                                />
-                                                                            ) : (
-                                                                                <strong>{ex.sets}</strong>
-                                                                            )}
-                                                                        </div>
-                                                                        <div className="metric">
-                                                                            <span>Reps:</span>
-                                                                            {isEditMode ? (
-                                                                                <input
-                                                                                    type="number"
-                                                                                    value={ex.reps ?? ''}
-                                                                                    onChange={(e) => handleExerciseChange(split.id, ex.id, { reps: parseInt(e.target.value) || 0 })}
-                                                                                    onBlur={(e) => persistExercise(split.id, ex.id, { reps: parseInt(e.target.value) || 0 })}
-                                                                                    className="metric-input-small"
-                                                                                />
-                                                                            ) : (
-                                                                                <strong>{ex.reps}</strong>
-                                                                            )}
+                                                                        <div className="weight-input-group">
+                                                                            <input type="number" value={ex.weight ?? ''} onChange={(e) => handleExerciseChange(split.id, ex.id, { weight: parseFloat(e.target.value) || 0 })} onBlur={(e) => persistExercise(split.id, ex.id, { weight: parseFloat(e.target.value) || 0 })} placeholder="0" className="weight-input" />
+                                                                            <span className="unit">kg</span>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-
-                                                                <div className="ex-inputs">
-                                                                    <div className="weight-input-group">
-                                                                        <input
-                                                                            type="number"
-                                                                            value={ex.weight ?? ''}
-                                                                            onChange={(e) => handleExerciseChange(split.id, ex.id, { weight: parseFloat(e.target.value) || 0 })}
-                                                                            onBlur={(e) => persistExercise(split.id, ex.id, { weight: parseFloat(e.target.value) || 0 })}
-                                                                            placeholder="0"
-                                                                            className="weight-input"
-                                                                        />
-                                                                        <span className="unit">kg</span>
-                                                                    </div>
-
-                                                                    {isEditMode && (
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            size="sm"
-                                                                            className="delete-ex-btn"
-                                                                            onClick={() => requestDeleteExercise(split.id, ex.id)}
-                                                                        >
-                                                                            <Trash2 size={16} />
-                                                                        </Button>
-                                                                    )}
                                                                 </div>
                                                             </Card>
                                                         ))
