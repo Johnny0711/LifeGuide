@@ -28,9 +28,15 @@ public class WorkoutController {
     }
 
     @GetMapping
-    public List<WorkoutSplit> getWorkouts(@AuthenticationPrincipal UserDetails userDetails) {
-        System.out.println("DEBUG: GET /api/workouts hit for user: " + userDetails.getUsername());
-        return workoutService.getWorkoutsForUser(userDetails.getUsername());
+    public ResponseEntity<?> getWorkouts(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            System.out.println("DEBUG: GET /api/workouts hit for user: " + userDetails.getUsername());
+            List<WorkoutSplit> splits = workoutService.getWorkoutsForUser(userDetails.getUsername());
+            return ResponseEntity.ok(splits);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error fetching workouts: " + e.getClass().getName() + " - " + e.getMessage());
+        }
     }
 
     @PostMapping
