@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     CheckCircle2, Flame, Dumbbell, Pin, ShoppingBag, MessageSquare, ArrowRight,
-    Plus, Play, Pause, RotateCcw, Sun, Smile, Meh, Frown, Award, Quote, Calendar, Star,
+    Play, Pause, RotateCcw, Sun, Smile, Meh, Frown, Award, Quote, Star,
     Zap, Heart
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '../services/apiService';
 import './Dashboard.css';
 
@@ -78,7 +78,7 @@ const Dashboard: React.FC = () => {
 
                 const maxStreak = habits.reduce((max: number, h: any) =>
                     Math.max(max, h.currentStreak || 0), 0);
-                
+
                 const topHabit = habits.sort((a: any, b: any) => (b.currentStreak || 0) - (a.currentStreak || 0))[0];
 
                 const pendingTodos = todos.filter((t: any) => !t.completed);
@@ -123,7 +123,6 @@ const Dashboard: React.FC = () => {
     };
 
     const level = Math.floor(metrics.habitScore / 10) + Math.floor(metrics.maxStreak / 5) + 1;
-    const progressToNextLevel = (metrics.habitScore % 10) * 10; // Simple calc for demo
 
     return (
         <div className="db-container animate-fade-in">
@@ -166,23 +165,23 @@ const Dashboard: React.FC = () => {
                 {/* Left Side: Modules & Charts */}
                 <div className="db-pane-left">
                     <div className="db-pane-content">
-                        
+
                         {/* Quick Add Bar */}
                         <div className="quick-add-bar">
-                            <input 
-                                type="text" 
-                                placeholder="What's on your mind? Type to quick add..." 
+                            <input
+                                type="text"
+                                placeholder="What's on your mind? Type to quick add..."
                                 value={quickAddText}
                                 onChange={(e) => setQuickAddText(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleQuickAdd('todo')}
                             />
                             <div className="quick-add-actions">
-                                <button onClick={() => handleQuickAdd('todo')} className="qa-btn qa-task"><CheckCircle2 size={16}/> Task</button>
-                                <button onClick={() => handleQuickAdd('pin')} className="qa-btn qa-pin"><Pin size={16}/> Pin</button>
+                                <button onClick={() => handleQuickAdd('todo')} className="qa-btn qa-task"><CheckCircle2 size={16} /> Task</button>
+                                <button onClick={() => handleQuickAdd('pin')} className="qa-btn qa-pin"><Pin size={16} /> Pin</button>
                             </div>
                         </div>
 
-                        <div className="pane-header" style={{marginTop: '2rem'}}>
+                        <div className="pane-header" style={{ marginTop: '2rem' }}>
                             <div className="pane-title">
                                 <h3>Quick Launch</h3>
                                 <span className="item-count">6 Modules</span>
@@ -262,17 +261,17 @@ const Dashboard: React.FC = () => {
                                 </div>
                             </Link>
                         </div>
-                        
+
                         {/* Weekly Activity Chart */}
-                        <div className="chart-section" style={{marginTop: '3rem'}}>
+                        <div className="chart-section" style={{ marginTop: '3rem' }}>
                             <h3>Weekly Activity</h3>
-                            <div className="chart-container" style={{height: 250, marginTop: '1rem'}}>
+                            <div className="chart-container" style={{ height: 250, marginTop: '1rem' }}>
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={mockChartData}>
                                         <XAxis dataKey="name" stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
-                                        <Tooltip 
-                                            cursor={{fill: 'rgba(255,255,255,0.05)'}}
-                                            contentStyle={{backgroundColor: '#1a1a24', border: 'none', borderRadius: '12px'}} 
+                                        <Tooltip
+                                            cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                                            contentStyle={{ backgroundColor: '#1a1a24', border: 'none', borderRadius: '12px' }}
                                         />
                                         <Bar dataKey="tasks" fill="#7AFFa1" radius={[4, 4, 0, 0]} name="Tasks" />
                                         <Bar dataKey="habits" fill="#FFF87C" radius={[4, 4, 0, 0]} name="Habits" />
@@ -286,7 +285,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Right Side: Widgets */}
                 <div className="db-pane-right">
-                    
+
                     {/* Weather & Quote */}
                     <div className="widget-card weather-quote">
                         <div className="weather-row">
@@ -301,10 +300,10 @@ const Dashboard: React.FC = () => {
 
                     {/* Up Next */}
                     <div className="widget-card up-next">
-                        <h3><Zap size={18}/> Today's Focus</h3>
+                        <h3><Zap size={18} /> Today's Focus</h3>
                         {metrics.recentTodos.length > 0 && (
                             <div className="focus-item">
-                                <div className="focus-icon"><CheckCircle2 size={16}/></div>
+                                <div className="focus-icon"><CheckCircle2 size={16} /></div>
                                 <div>
                                     <h5>{metrics.recentTodos[0].title}</h5>
                                     <p>Top Priority Task</p>
@@ -313,7 +312,7 @@ const Dashboard: React.FC = () => {
                         )}
                         {metrics.topHabit && (
                             <div className="focus-item">
-                                <div className="focus-icon"><Flame size={16}/></div>
+                                <div className="focus-icon"><Flame size={16} /></div>
                                 <div>
                                     <h5>{metrics.topHabit.title}</h5>
                                     <p>{metrics.topHabit.currentStreak} Day Streak!</p>
@@ -321,7 +320,7 @@ const Dashboard: React.FC = () => {
                             </div>
                         )}
                         <div className="focus-item">
-                            <div className="focus-icon"><Dumbbell size={16}/></div>
+                            <div className="focus-icon"><Dumbbell size={16} /></div>
                             <div>
                                 <h5>Rest Day</h5>
                                 <p>No workout planned</p>
@@ -335,10 +334,10 @@ const Dashboard: React.FC = () => {
                         <div className="pomo-display">{formatTime(pomoTime)}</div>
                         <div className="pomo-controls">
                             <button className="pomo-btn play" onClick={() => setPomoActive(!pomoActive)}>
-                                {pomoActive ? <Pause size={20}/> : <Play size={20}/>}
+                                {pomoActive ? <Pause size={20} /> : <Play size={20} />}
                             </button>
-                            <button className="pomo-btn reset" onClick={() => { setPomoActive(false); setPomoTime(25*60); }}>
-                                <RotateCcw size={20}/>
+                            <button className="pomo-btn reset" onClick={() => { setPomoActive(false); setPomoTime(25 * 60); }}>
+                                <RotateCcw size={20} />
                             </button>
                         </div>
                     </div>
@@ -348,13 +347,13 @@ const Dashboard: React.FC = () => {
                         <h3>How are you feeling?</h3>
                         <div className="mood-emojis">
                             {[
-                                {icon: <Frown size={28}/>, val: 1},
-                                {icon: <Meh size={28}/>, val: 2},
-                                {icon: <Smile size={28}/>, val: 3},
-                                {icon: <Star size={28}/>, val: 4},
-                                {icon: <Heart size={28}/>, val: 5}
+                                { icon: <Frown size={28} />, val: 1 },
+                                { icon: <Meh size={28} />, val: 2 },
+                                { icon: <Smile size={28} />, val: 3 },
+                                { icon: <Star size={28} />, val: 4 },
+                                { icon: <Heart size={28} />, val: 5 }
                             ].map(m => (
-                                <button 
+                                <button
                                     key={m.val}
                                     className={`mood-btn ${mood === m.val ? 'active' : ''}`}
                                     onClick={() => setMood(m.val)}
