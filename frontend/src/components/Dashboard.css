@@ -102,90 +102,6 @@
     gap: 1.5rem;
 }
 
-.db-hero-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-
-.db-score-main {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.db-receipt-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: var(--radius-full);
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-}
-
-.db-big-number {
-    font-size: 4.5rem;
-    font-weight: 600;
-    line-height: 1;
-    display: flex;
-    align-items: flex-start;
-}
-
-.db-big-number .currency {
-    font-size: 2.5rem;
-    margin-top: 0.5rem;
-    margin-right: 0.5rem;
-    color: var(--text-secondary);
-}
-
-.db-big-number .decimals {
-    font-size: 2rem;
-    margin-top: 0.75rem;
-    color: var(--text-muted);
-}
-
-.db-meta-group {
-    display: flex;
-    gap: 2.5rem;
-    padding-bottom: 1rem;
-}
-
-.db-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.db-meta-item .meta-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-full);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px dashed rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-}
-
-.db-meta-item .meta-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.db-meta-item .meta-text .label {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-}
-
-.db-meta-item .meta-text strong {
-    font-size: 0.95rem;
-    font-weight: 600;
-}
-
 /* Hero Bottom - Pills */
 .db-hero-bottom {
     margin-top: 1rem;
@@ -280,8 +196,8 @@
 
 /* Split Area */
 .db-split-area {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
     margin-top: 3rem;
 }
@@ -292,32 +208,7 @@
     flex-direction: column;
 }
 
-.db-pane-tabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-left: 2rem;
-}
-
-.db-pane-tabs .tab {
-    padding: 0.6rem 1.5rem;
-    background: var(--bg-tertiary);
-    border-radius: 12px 12px 0 0;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: -1px; /* Connect to card below */
-}
-
-.db-pane-tabs .tab.active {
-    background: var(--bg-elevated);
-    color: var(--text-primary);
-}
-
 .db-pane-content {
-    background: var(--bg-elevated);
-    border-radius: 24px;
-    padding: 2rem;
     flex: 1;
 }
 
@@ -382,19 +273,11 @@
 }
 
 .module-card {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 20px;
-    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     transition: all 0.2s;
-    border: 1px solid transparent;
-}
-
-.module-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
+    padding: 1rem 0;
 }
 
 .mod-icon {
@@ -438,159 +321,8 @@
 .dot-btn:hover { background: var(--text-primary); color: var(--bg-primary); }
 
 
-/* Right Pane */
-.db-pane-right {
-    background: var(--bg-elevated);
-    border-radius: 32px 32px 0 0;
-    padding: 2rem;
-    position: relative;
-    border-top-right-radius: 32px;
-}
-
-.activity-tab {
-    position: absolute;
-    top: -40px;
-    right: 2rem;
-    background: var(--bg-elevated);
-    padding: 0.6rem 2rem;
-    border-radius: 16px 16px 0 0;
-    font-weight: 600;
-}
-
-.act-toolbar {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-}
-
-.act-toolbar button {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-full);
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-secondary);
-}
-
-.act-title-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 1.5rem;
-}
-
-.act-title-row h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-.act-stack {
-    display: flex;
-    flex-direction: column;
-}
-
-.act-card {
-    border-radius: 24px;
-    padding: 1.5rem;
-    display: flex;
-    gap: 1.5rem;
-    position: relative;
-    margin-bottom: -20px; /* Stack overlap */
-    color: var(--bg-primary);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.act-card.act-purple {
-    background: var(--accent-purple);
-    z-index: 1;
-}
-
-.act-card.act-yellow {
-    background: var(--accent-yellow);
-    z-index: 2;
-}
-
-.act-card.act-green {
-    background: var(--accent-green);
-    z-index: 3;
-}
-
-.act-card-date {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    text-align: center;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.date-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.act-card-info {
-    flex: 1;
-}
-
-.act-card-info h4 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
-    font-weight: 800;
-}
-
-.act-user {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.25rem 0.5rem;
-    border-radius: var(--radius-full);
-}
-
-.mini-avatar {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: white;
-    color: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.act-go {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    width: 24px;
-    height: 24px;
-    background: #ffffff;
-    border-radius: 50%;
-    color: #121217;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-weight: 800;
-    transition: transform 0.2s;
-}
-
-.act-go:hover {
-    transform: scale(1.1);
-}
-
 @media (max-width: 1024px) {
-    .db-split-area { grid-template-columns: 1fr; }
     .db-modules-grid { grid-template-columns: repeat(2, 1fr); }
-    .db-hero-top { flex-direction: column; align-items: flex-start; gap: 1rem; }
 }
 
 @media (max-width: 768px) {
@@ -599,5 +331,4 @@
     .yellow-pill { margin-left: 0; padding-left: 1.5rem; }
     .db-progress-wrapper { margin-left: 0; }
     .db-header { flex-direction: column; gap: 1rem; }
-    .db-pane-right { margin-top: 2rem; }
 }
