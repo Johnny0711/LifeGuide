@@ -7,18 +7,12 @@ import {
     Pin,
     ShoppingBag,
     MessageSquare,
-    Target,
-    User,
-    Award,
-    Calendar,
     ArrowRight
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
 import api from '../services/apiService';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
-    const { user } = useAuth();
     const [metrics, setMetrics] = useState({
         habitScore: 0,
         maxStreak: 0,
