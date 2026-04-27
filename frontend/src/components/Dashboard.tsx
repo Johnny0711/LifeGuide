@@ -231,9 +231,6 @@ const Dashboard: React.FC = () => {
                                 </div>
                             </Link>
                         </div>
-
-                        </div>
-
                     </div>
                 </div>
 
