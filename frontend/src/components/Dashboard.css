@@ -209,6 +209,9 @@
 }
 
 .db-pane-content {
+    background: var(--bg-elevated);
+    border-radius: 24px;
+    padding: 2rem;
     flex: 1;
 }
 
@@ -273,11 +276,21 @@
 }
 
 .module-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    transition: all 0.2s;
-    padding: 1rem 0;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.module-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .mod-icon {
