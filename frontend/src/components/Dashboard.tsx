@@ -101,12 +101,6 @@ const Dashboard: React.FC = () => {
             <section className="db-hero">
                 <div className="db-hero-bottom">
                     <div className="db-pills-row">
-                        <div className="db-pill purple-pill">
-                            <div className="pill-header">Level {level}</div>
-                            <div className="pill-body">
-                                <Award size={16} /> Productivity Ninja
-                            </div>
-                        </div>
                         <div className="db-pill green-pill">
                             <div className="pill-header">Tasks</div>
                             <div className="pill-body">
