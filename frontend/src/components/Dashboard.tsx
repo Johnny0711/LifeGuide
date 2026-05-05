@@ -240,15 +240,6 @@ const Dashboard: React.FC = () => {
                     {/* Up Next */}
                     <div className="widget-card up-next">
                         <h3><Zap size={18} /> Today's Focus</h3>
-                        {metrics.recentTodos.length > 0 && (
-                            <div className="focus-item">
-                                <div className="focus-icon"><CheckCircle2 size={16} /></div>
-                                <div>
-                                    <h5>{metrics.recentTodos[0].title}</h5>
-                                    <p>Top Priority Task</p>
-                                </div>
-                            </div>
-                        )}
                         {metrics.topHabit && (
                             <div className="focus-item">
                                 <div className="focus-icon"><Flame size={16} /></div>
