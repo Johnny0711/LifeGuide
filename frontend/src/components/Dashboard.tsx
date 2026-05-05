@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     CheckCircle2, Flame, Dumbbell, Pin, ShoppingBag, MessageSquare, ArrowRight,
-    Play, Pause, RotateCcw, Award, Zap
+    Play, Pause, RotateCcw, Zap
 } from 'lucide-react';
 import api from '../services/apiService';
 import './Dashboard.css';
@@ -93,7 +93,6 @@ const Dashboard: React.FC = () => {
         }
     };
 
-    const level = Math.floor(metrics.habitScore / 10) + Math.floor(metrics.maxStreak / 5) + 1;
 
     return (
         <div className="db-container animate-fade-in">
